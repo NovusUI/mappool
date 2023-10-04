@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigation } from 'react-router-dom';
 import ContactYourRide from '../screens/CotactYourRideScreen';
 import Login from '../screens/LoginScreen';
 import Request from '../screens/RequestScreen';
@@ -18,9 +18,11 @@ const Nav = ()=>{
     const {isLoggedIn, setUser, user, setIsLoggedIn} = useAuth()
     const [loading, setLoading] = useState(true)
 
+ 
+
     useEffect(() => {
 
-    
+      
         onAuthStateChanged(auth, user => {
           if (user) {
         
@@ -57,7 +59,10 @@ const Nav = ()=>{
 
     return (
         <Router>
-        { !isLoggedIn ? (
+    
+        { !isLoggedIn ? 
+        (
+            
         <Routes>
           <Route exact path="/" element={<Login />} />
           <Route path="signup" element={<SignUp/>}/>
@@ -65,11 +70,13 @@ const Nav = ()=>{
         ) : (
           <Routes>
           <Route exact path="/" element={<UserInfo/>} />
-          <Route path="/request" element={<Request/>} />
+          <Route path="/request"  element={<Request/>} />
           <Route path ="/contactride" element={<ContactYourRide/>}/>
           <Route path='/role' element={<Role/>}/>
           </Routes>
+          
         )}
+    
       </Router>
     )
 }

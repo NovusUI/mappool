@@ -1,0 +1,92 @@
+/* Reset some default browser styles */
+body, h1, h2, h3, p, ul, ol, li {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Set a base font size and font family */
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #f0f0f0; /* Set your background color here */
+  }
+  
+  /* Style the root container (usually an element with id="root") */
+  #root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  
+  /* Add styles for links */
+  a {
+    text-decoration: none;
+    color: #007bff; /* Set link color */
+    transition: color 0.2s;
+  }
+  
+  a:hover {
+    color: #0056b3; /* Set link color on hover */
+  }
+  
+  /* Add global styles for buttons */
+  button {
+    cursor: pointer;
+    background-color: #78A9FA; /* Set button background color */
+    color: #fff; /* Set button text color */
+    border: none;
+    /* padding: 10px 20px; */
+    width: 90%;
+    height: 7vh;
+    border-radius: 15px;
+    transition: background-color 0.2s;
+    margin: 5px 0;
+  }
+
+  input{
+    width: 90%;
+    height: 7vh;
+    border: 1px solid;
+    border-radius: 15px;
+    margin: 5px 0;
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+  
+  button:hover {
+    background-color: #0056b3; /* Set button background color on hover */
+  }
+  
+  .container{
+    
+    padding: 20px;
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    background-color: #4A4A4A;
+    border-radius: 20px;
+    align-items: center;
+    color: #f0f0f0;
+  }
+
+  .social-login-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8397B84A;
+    position: relative;
+  }
+
+  .social-login-btn >svg{
+    position: absolute;
+    left: 15px;;
+
+  }
+
+  .danger-btn{
+    background-color: #FF3A3A;
+  }

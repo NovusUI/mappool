@@ -1,0 +1,21 @@
+.svg-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .moving-circle {
+    transition: transform 2s linear;
+    animation: moveAnimation 4s ease-in-out infinite alternate;
+  }
+  
+  @keyframes moveAnimation {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(50px); /* Adjust the distance you want to move */
+    }
+  }
+  
