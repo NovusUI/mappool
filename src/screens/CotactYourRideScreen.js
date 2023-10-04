@@ -18,6 +18,9 @@ const ContactYourRide = ()=>{
                 Create a group to connect with others.
             </p>
         </div>
+        <div className="container" style={{backgroundColor:"#2F2F2F"}}>
+        <button>Switch Role</button>
+        </div> 
     
         </>
     :
@@ -30,8 +33,11 @@ const ContactYourRide = ()=>{
                 </svg>
                 create group
             </button>
-            <button className="danger-btn">Remove ride</button>
-        </div>  
+            <button className="danger-btn">Deactivate ride</button>
+        </div> 
+        <div className="container" style={{backgroundColor:"#2F2F2F"}}>
+        <button>Switch Role</button>
+        </div> 
         </>
 
     )
