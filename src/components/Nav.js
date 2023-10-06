@@ -17,7 +17,7 @@ const Nav = ()=>{
 
     const {isLoggedIn, setUser, user, setIsLoggedIn} = useAuth()
     const [loading, setLoading] = useState(true)
-
+   
  
 
     useEffect(() => {
@@ -69,10 +69,10 @@ const Nav = ()=>{
         </Routes>
         ) : (
           <Routes>
-          <Route exact path="/" element={<UserInfo/>} />
+          <Route exact path="/userinfo" element={<UserInfo/>} />
           <Route path="/request"  element={<Request/>} />
-          <Route path ="/contactride" element={<ContactYourRide/>}/>
-          <Route path='/role' element={<Role/>}/>
+          <Route path ={user.role? "/":"/contactride"} element={<ContactYourRide/>}/>
+          <Route path={user.role ?'/role':"/"} element={<Role/>}/>
           </Routes>
           
         )}

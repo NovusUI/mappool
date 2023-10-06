@@ -1,0 +1,22 @@
+
+.switch-container{
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.switch,.switch-active{
+
+   width:15px;
+   height: 15px;
+   background-color: #45566F;
+   margin: 0 15px;
+   border: 2px solid #5D5D5D;
+   border-radius: 100%;
+
+}
+.switch-active{
+    border: 2px solid #FFFFFF;
+    background-color:#78A9F9;
+}

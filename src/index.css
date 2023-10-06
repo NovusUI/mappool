@@ -73,7 +73,7 @@ body, h1, h2, h3, p, ul, ol, li {
     color: #f0f0f0;
   }
 
-  .social-login-btn{
+  .social-login-btn, .group-btn, .inactive{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,12 +81,27 @@ body, h1, h2, h3, p, ul, ol, li {
     position: relative;
   }
 
-  .social-login-btn >svg{
+  .social-login-btn >svg, .group-btn > svg, .inactive >svg{
     position: absolute;
     left: 15px;;
 
   }
 
+  .group-btn{
+    background-color: #78A9FA;
+  }
+
   .danger-btn{
     background-color: #FF3A3A;
   }
+
+  .inactive{
+    background-color: #3F4246;
+  }
+  .inactive:hover{
+    background-color: #3F4246;
+  }
+  .active{
+
+  }
+
