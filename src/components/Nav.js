@@ -1,11 +1,12 @@
 
 import { BrowserRouter as Router, Route, Routes, useNavigation } from 'react-router-dom';
-import ContactYourRide from '../screens/CotactYourRideScreen';
+import ContactYourRide from '../screens/ContactYourRide/ContactYourRideScreen';
 import Login from '../screens/LoginScreen';
 import Request from '../screens/RequestScreen';
 import Role from "../screens/RoleScreen"
 import SignUp from "../screens/SignUpScreen"
 import UserInfo from "../screens/UserScreen"
+import SwipeableContactYourRide from "../screens/SwipeableContactYourRide"
 import { useAuth } from '../contextAPI/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -73,6 +74,7 @@ const Nav = ()=>{
           <Route path="/request"  element={<Request/>} />
           <Route path ={user.role? "/":"/contactride"} element={<ContactYourRide/>}/>
           <Route path={user.role ?'/role':"/"} element={<Role/>}/>
+          <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
           </Routes>
           
         )}
