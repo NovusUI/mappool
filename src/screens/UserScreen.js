@@ -1,13 +1,13 @@
 import { useRef, useEffect, useState } from "react"
 import { useAuth } from "../contextAPI/AuthContext"
 import "../index.css"
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { useNavigate } from "react-router-dom"
 
 const UserInfo = ()=>{
     
-    const {user, updateRole} = useAuth()
+    const {user, updateRole, setUser} = useAuth()
     const [requesting, setRequesting] = useState(false)
     console.log(updateRole)
     const {waNum, email, location, convPULoc, addInfo,sitsAvail} = user 
@@ -44,7 +44,7 @@ const UserInfo = ()=>{
         convPULocRef.current.value = convPULoc || "";
         addInfoRef.current.value = addInfo || "";
         
-      }, [user]);
+      }, []);
 
 
     // submit user info update 
@@ -65,86 +65,103 @@ const UserInfo = ()=>{
             data.sitsAvail = sitsAvailRef.current.value
 
         const usersCollection = collection(db, "users")
-        console.log(user)
+        
         const userDoc = doc(usersCollection,user.id)
       
         try {
             // await setDoc(userDoc, data)
-      
+             
+            // update user info
             await updateDoc(userDoc,data)
         
+            //update user in AuthContext
+           
+            console.log(updateRole, user.role)
 
+            setUser((prev)=>({
+                ...prev,
+                role: updateRole || user.role
+            }))
+          
+
+            console.log(user)
             // if(user.role){
                
-                setRequesting(true)
-                //check if an event subcollection exists
                
+               
+               //check if a userEvent subcat doc exista
                 const userEvents = collection(userDoc,"userevents")
                 
                 const userEventDoc = doc(userEvents,"sundayService")
                
                 const userEventDocSnapshot = await getDoc(userEventDoc)
 
-                if(userEventDocSnapshot.exists()){
-                  
-                    const userEventDocData = userEventDocSnapshot.data()
-                    if(user.role ==="poolee" && !userEventDocData.hasOwnProperty("poolId")){
-                         
-                        return
-                    }
-                    if(user.role ==="pooler" && !userEventDocData.hasOwnProperty("yourPoolId")){
-                        return
-                    }
-                    navigate("/")
-                
-                }else{
+                const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
 
-                    
+                console.log(user.role)
+                if( (user.role === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (user.role === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
+                    setRequesting(true)
+                    console.log("pooooolerrrr")
                     let poolInfo = {
                         ...eventDetails,
                         poolerLoc: data.location,
                         convPULoc: data.convPULoc,
                         poolOwnerId: user.id,
-                        status: "created"
+                        status: "created",
+                        createdAt: serverTimestamp()
                     }
+
+                    const poolCollection = collection(db,"pool")
+                    const poolDoc = doc(poolCollection)
+                         
+                      // create new pool
+                    await setDoc(poolDoc,poolInfo)
 
                     if(user.role === "poolee"){
 
-                        poolInfo ={
+                        poolInfo = {
                             ...poolInfo,
                             seats: 4,
                             passangerId: [user.id],
-                            poolType: "pool"
+                            poolType: "pool",
+                            
+                        }
+                        // create or update new userEvent
+                    await setDoc(userEventDoc,{poolId:poolDoc.id, eventName: eventDetails.eventName},{ merge: true })
+                    }
+    
+                  
+                    if(user.role ==="pooler"){
+                        
+                        poolInfo = {
+                            ...poolInfo,
+                            seats: data.sitsAvail,
+                            costPerSeat: 0,
+                            poolType: "carpool",
                         }
 
-                        const poolCollection = collection(db,"pool")
-                        const poolDoc = doc(poolCollection)
-                         
-                      
-                        await setDoc(poolDoc,poolInfo)
-                        await setDoc(userEventDoc,{poolId:poolDoc.id, eventName: eventDetails.eventName})
-                        navigate("/")
-                        return
+                        // create or update new userEvent
+                       await setDoc(userEventDoc,{yourPoolId:poolDoc.id, eventName: eventDetails.eventName},{ merge: true })
+                       
                     }
-                    // if(user.role === "pooler"){
 
-                    // }
+                   
+                    
+                    
+                    user.role ? navigate("/",{state: {requesting:true}}) : navigate("/contactride", {state: {requesting:true}})
+                    return
+          
+                
+                }else{
+
+                    
+                    navigate("/")
+  
                  
                 }
                 
 
-
-                    
-                
-                 navigate("/")
-                
-            // }else{
-            //     navigate("/")
-            // }
-          
-            //if it exists 
-
-            user.role ? navigate("/"): navigate("/contactride", {state: {requesting:true}})
+            
         } catch (error) {
             console.log(error)
         }
@@ -153,6 +170,9 @@ const UserInfo = ()=>{
         
      }
 
+
+
+     //switch to role screen
      const onChangeRole = async()=>{
 
         user.role ? navigate("/role") : navigate("/")
