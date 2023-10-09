@@ -4,6 +4,7 @@ import "../index.css"
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 const UserInfo = ()=>{
     
@@ -98,10 +99,11 @@ const UserInfo = ()=>{
 
                 const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
 
-                console.log(user.role)
+                //execute if userrole doesnt exist or userevents subcollection component "poolId" doesn't exist for role poolee or userevents subcollection component "yourpoolId" doesnt exist for role pooler
                 if( (user.role === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (user.role === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
                     setRequesting(true)
-                    console.log("pooooolerrrr")
+                
+                    // poolinfo : common data
                     let poolInfo = {
                         ...eventDetails,
                         poolerLoc: data.location,
@@ -110,15 +112,12 @@ const UserInfo = ()=>{
                         status: "created",
                         createdAt: serverTimestamp()
                     }
+                
+                   
 
-                    const poolCollection = collection(db,"pool")
-                    const poolDoc = doc(poolCollection)
-                         
-                      // create new pool
-                    await setDoc(poolDoc,poolInfo)
-
+                    
                     if(user.role === "poolee"){
-
+                        //poolee specific data
                         poolInfo = {
                             ...poolInfo,
                             seats: 4,
@@ -127,12 +126,21 @@ const UserInfo = ()=>{
                             
                         }
                         // create or update new userEvent
-                    await setDoc(userEventDoc,{poolId:poolDoc.id, eventName: eventDetails.eventName},{ merge: true })
+                        const requestCollection = collection(db,"pool")
+                        const requestDoc = doc(requestCollection)
+                             
+                          // create new pool
+                        await setDoc(requestDoc,poolInfo)
+                        await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName},{ merge: true })
+                         
+                        poolInfo.requestType = "pool"
+                        // send queue request to backend server
+                       
                     }
     
                   
                     if(user.role ==="pooler"){
-                        
+                          // pooler specific data
                         poolInfo = {
                             ...poolInfo,
                             seats: data.sitsAvail,
@@ -140,11 +148,31 @@ const UserInfo = ()=>{
                             poolType: "carpool",
                         }
 
+                        const poolCollection = collection(db,"pool")
+                        const poolDoc = doc(poolCollection)
+                             
+                          // create new pool
+                        await setDoc(poolDoc,poolInfo)
+
                         // create or update new userEvent
                        await setDoc(userEventDoc,{yourPoolId:poolDoc.id, eventName: eventDetails.eventName},{ merge: true })
                        
+                       poolInfo.requestType = "ride"
+                       
                     }
-
+                     
+                    const res = await axios.post("localhost:4000/api/vi/poolrequest",
+                      
+                    {
+                        poolInfo
+                    },
+                    {
+                        headers: {
+                          'Authorization': `Bearer ${user.getIdToken()}`,
+                          'Content-Type': 'application/json',
+                        },
+                      }
+                    )
                    
                     
                     
