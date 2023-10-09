@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }) => {
                   
                 setIsLoggedIn(true);
                 setUser(data)
+                
             })
             .catch((error) => {
                     alert(error);
