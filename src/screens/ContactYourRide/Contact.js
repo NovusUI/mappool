@@ -64,7 +64,7 @@ const Contact = ({type})=>{
             </svg>
             Join group
           </button>
-          <button  className={carPoolFound? "danger-btn":"inactive"}  disabled={!poolFound}>Reject ride</button>
+          {/* <button  className={carPoolFound? "danger-btn":"inactive"}  disabled={!poolFound}>Reject ride</button> */}
           </>
         }
         {
@@ -76,7 +76,7 @@ const Contact = ({type})=>{
             </svg>
             Create group
           </button>
-          <button  className={poolFound? "danger-btn":"inactive"}  disabled={!poolFound}>Reject ride</button>
+          {/* <button  className={poolFound? "danger-btn":"inactive"}  disabled={!poolFound}>Reject ride</button> */}
           </>
         }
         
