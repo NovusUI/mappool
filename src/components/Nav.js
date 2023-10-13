@@ -16,7 +16,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 const Nav = ()=>{
 
-    const {isLoggedIn, setUser, user, setIsLoggedIn} = useAuth()
+    const {isLoggedIn, setUser, user, setIsLoggedIn, setToken} = useAuth()
     const [loading, setLoading] = useState(true)
    
  
@@ -28,7 +28,11 @@ const Nav = ()=>{
           if (user) {
         
             const userRef = doc(db, "users", user.uid);
-          
+             
+            user.getIdToken().then((token)=>{
+              console.log(token)
+              setToken(token)
+            })
     
             getDoc(userRef)
             .then((docSnapshot) => {

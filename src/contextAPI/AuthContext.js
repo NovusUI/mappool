@@ -8,6 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [updateRole, setUpdateRole] = useState("")
  
 
@@ -49,6 +50,9 @@ export const AuthProvider = ({ children }) => {
                   
                 setIsLoggedIn(true);
                 setUser(data)
+                 data.getToken().then(token=>{
+                  setToken(token)
+                 })
                 
             })
             .catch((error) => {
@@ -69,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole }}>
+    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole, setToken,token }}>
       {children}
     </AuthContext.Provider>
   );

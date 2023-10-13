@@ -18,6 +18,8 @@ const Role = ()=>{
         )
     },[])
 
+    console.log(updateRole)
+
     const setRole = (role) =>{
 
         setUpdateRole(role)

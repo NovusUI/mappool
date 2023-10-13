@@ -8,7 +8,7 @@ import axios from "axios"
 
 const UserInfo = ()=>{
     
-    const {user, updateRole, setUser} = useAuth()
+    const {user, updateRole, setUser,token} = useAuth()
     const [requesting, setRequesting] = useState(false)
     console.log(updateRole)
     const {waNum, email, location, convPULoc, addInfo,sitsAvail} = user 
@@ -16,7 +16,7 @@ const UserInfo = ()=>{
     const navigate = useNavigate()
     
     const eventDetails = {
-        eventId : "sundayservice",
+        eventId : "sundayService",
         eventName: "CCI sunday service"  ,        
         eventDate: "sundays",     
         eventTime: "10am",
@@ -36,7 +36,7 @@ const UserInfo = ()=>{
 
      useEffect(() => {
 
-        if( updateRole == "pooler"  || (!updateRole && user.role == "pooler" ))
+        if( updateRole == "pooler")
             sitsAvailRef.current.value = sitsAvail || "";
 
         waNumRef.current.value = waNum || "" ;
@@ -59,7 +59,7 @@ const UserInfo = ()=>{
           location: locationRef.current.value,
           convPULoc: convPULocRef.current.value,
           addInfo: addInfoRef.current.value,
-          role: updateRole || user.role
+          role: updateRole
         }
 
         if(updateRole =="pooler")
@@ -81,7 +81,7 @@ const UserInfo = ()=>{
 
             setUser((prev)=>({
                 ...prev,
-                role: updateRole || user.role
+                role: updateRole
             }))
           
 
@@ -100,7 +100,7 @@ const UserInfo = ()=>{
                 const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
 
                 //execute if userrole doesnt exist or userevents subcollection component "poolId" doesn't exist for role poolee or userevents subcollection component "yourpoolId" doesnt exist for role pooler
-                if( (user.role === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (user.role === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
+                if( (updateRole === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (updateRole === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
                     setRequesting(true)
                 
                     // poolinfo : common data
@@ -108,15 +108,19 @@ const UserInfo = ()=>{
                         ...eventDetails,
                         poolerLoc: data.location,
                         convPULoc: data.convPULoc,
-                        poolOwnerId: user.id,
+                        requesterId: user.id,
                         status: "created",
-                        createdAt: serverTimestamp()
-                    }
-                
                    
+                    }
+                    
+                    // create the pool request in db
+                    const requestCollection = collection(db,"request")
+                    const requestDoc = doc(requestCollection)
+                    poolInfo.requestId = requestDoc.id
+                    
 
                     
-                    if(user.role === "poolee"){
+                    if(updateRole === "poolee"){
                         //poolee specific data
                         poolInfo = {
                             ...poolInfo,
@@ -126,20 +130,33 @@ const UserInfo = ()=>{
                             
                         }
                         // create or update new userEvent
-                        const requestCollection = collection(db,"pool")
-                        const requestDoc = doc(requestCollection)
-                             
-                          // create new pool
-                        await setDoc(requestDoc,poolInfo)
+                   
                         await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName},{ merge: true })
                          
-                        poolInfo.requestType = "pool"
+                        poolInfo.requestType = "poolRequest"
+                        await setDoc(requestDoc,poolInfo)
                         // send queue request to backend server
-                       
+                      
+
+                         //  for(let x = 0; x < 8; x++){
+                     
+                         const res = await axios.post("http://localhost:3003/api/v1/process-pool-request",
+                      
+                        {
+                            ...poolInfo
+                        },
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                        )
+                        //  }
                     }
     
                   
-                    if(user.role ==="pooler"){
+                    if(updateRole  ==="pooler"){
                           // pooler specific data
                         poolInfo = {
                             ...poolInfo,
@@ -148,41 +165,24 @@ const UserInfo = ()=>{
                             poolType: "carpool",
                         }
 
-                        const poolCollection = collection(db,"pool")
-                        const poolDoc = doc(poolCollection)
-                             
-                          // create new pool
-                        await setDoc(poolDoc,poolInfo)
-
-                        // create or update new userEvent
-                       await setDoc(userEventDoc,{yourPoolId:poolDoc.id, eventName: eventDetails.eventName},{ merge: true })
                        
-                       poolInfo.requestType = "ride"
+                        
+                        // create or update new userEvent
+                       await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })
+                       
+                       poolInfo.requestType = "carpoolOffering"
+                       await setDoc(requestDoc,poolInfo)
                        
                     }
-                     
-                    const res = await axios.post("localhost:4000/api/vi/poolrequest",
-                      
-                    {
-                        poolInfo
-                    },
-                    {
-                        headers: {
-                          'Authorization': `Bearer ${user.getIdToken()}`,
-                          'Content-Type': 'application/json',
-                        },
-                      }
-                    )
-                   
-                    
-                    
+
+                    console.log(token)
+
                     user.role ? navigate("/",{state: {requesting:true}}) : navigate("/contactride", {state: {requesting:true}})
                     return
           
                 
                 }else{
 
-                    
                     navigate("/")
   
                  
@@ -226,7 +226,7 @@ const UserInfo = ()=>{
         <h5>You will be notified once we pair you</h5>
         </div>
         :
-        updateRole == "poolee"  || (!updateRole && user.role == "poolee" ) ?
+        updateRole == "poolee" ?
         <>   
          <form onSubmit={onNext}>
          <div className="container" >

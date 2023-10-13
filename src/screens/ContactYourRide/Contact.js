@@ -85,12 +85,24 @@ const Contact = ({type})=>{
           <p>Exciting news!!! We got you a ride.
             Join the group to connect with others.
           </p>
+          ||
+          type === 'carpool' &&
+          <p>
+            You'll receive a notification once we find
+            a match.
+          </p>
         }
 
         {
           poolFound && type === 'pool' &&
-          <p>Exciting news!!! We got you a ride.
+          <p>Exciting news!!! We got you a pool group.
             Connect with others to arrange a ride.
+          </p>
+          ||
+          type === 'pool' &&
+          <p>
+            You'll receive a notification once we find
+            a match.
           </p>
         }
       </div>
