@@ -226,8 +226,7 @@ const UserInfo = ()=>{
         <h5>You will be notified once we pair you</h5>
         </div>
         :
-        updateRole == "poolee" ?
-        <>   
+   
          <form onSubmit={onNext}>
          <div className="container" >
             <h3>Let's pair you</h3>
@@ -237,6 +236,13 @@ const UserInfo = ()=>{
             <input placeholder="Location" ref={locationRef} required></input>
             <input placeholder="Convenient pick-up location" ref={convPULocRef} required></input>
             <input placeholder="Additional info" ref={addInfoRef} required></input>
+           
+            {updateRole == "pooler" && 
+             <>
+            <input placeholder="Sits available" ref={sitsAvailRef} required></input>
+            <input placeholder="how much would a sit cost?" ref={sitsAvailRef} required></input>
+             </>
+            }
             
 
         </div>
@@ -245,29 +251,8 @@ const UserInfo = ()=>{
             <button onClick={onChangeRole}>Change Role</button>
         </div>
         </form>
-        </>
-        :
-        <>   
-         <form  onSubmit={onNext}>
-        <div className="container" >
-           <h3>Let's pair you</h3>
-           <input placeholder="Whatsapp number" ref={waNumRef} required></input>
-            <input placeholder="Email" ref={emailRef} required></input>
-            <input placeholder="Location" ref={locationRef} required></input>
-            <input placeholder="Convenient pick-up location" ref={convPULocRef} required></input>
-            <input placeholder="Additional info" ref={addInfoRef} required></input>
-            <input placeholder="Sits available" ref={sitsAvailRef} required></input>
-           
 
-       </div>
-       <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-           <button>Next</button>
-           <button onClick={onChangeRole}>Change Role</button>
-       </div>
-       </form>
-       </>
-        
-        
+      
 
      
     )
