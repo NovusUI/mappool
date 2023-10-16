@@ -314,11 +314,7 @@ const UserInfo = ()=>{
         <button>Next</button>
         <button onClick={onChangeRole}>Change Role</button>
         </div>
-        </form>
-
-      
-
-     
+        </form>     
     )
 }
     
