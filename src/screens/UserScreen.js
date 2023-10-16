@@ -75,11 +75,19 @@ const UserInfo = ()=>{
     }
     
     function validateConvenientPickUpLocation(value) {
-        if (value.trim() === '') {
-            return 'Convenient pick-up location is required'
+        // Remove leading and trailing whitespace from the input
+        value = value.trim();
+        
+        // Split the input by comma and trim each part
+        const locations = value.split(',').map(part => part.trim());
+      
+        // Check if there are more than 3 locations
+        if (locations.length > 3) {
+          return 'You can only specify up to 3 convenient pickup locations separated by a comma';
         }
+      
         return null
-    }      
+      }            
     
     function validateAdditionalInfo(value) {
         if (value.length > 200) {
