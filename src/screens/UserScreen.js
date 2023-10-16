@@ -16,6 +16,7 @@ const UserInfo = ()=>{
     const [convPULocError, setConvPULocError] = useState(null)
     const [addInfoError, setAddInfoError] = useState(null)
     const [seatsAvailError, setSeatsAvailError] = useState(null)
+    const [seatCostError, setSeatCostError] = useState(null)
     console.log(updateRole)
     const {waNum, email, location, convPULoc, addInfo, seatsAvail: seatsAvail, seatsCost: seatsCost} = user 
     
@@ -37,12 +38,12 @@ const UserInfo = ()=>{
     const convPULocRef = useRef()
     const addInfoRef = useRef()
     const seatsAvailRef = useRef()
-    const seatsCostRef = useRef()
+    const seatCostRef = useRef()
     
     useEffect(() => {
         if( updateRole == "pooler") {
             seatsAvailRef.current.value = seatsAvail || ""
-            seatsCostRef.current.value = seatsCost || ""
+            seatCostRef.current.value = seatsCost || ""
         }
         waNumRef.current.value = waNum || "" 
         emailRef.current.value = email
@@ -102,6 +103,13 @@ const UserInfo = ()=>{
           }
         return null
     }
+
+    function validateSeatCost(value) {
+        if (isNaN(value)) {
+            return 'Seats available must be a number';
+          }
+        return null
+    }
     
     // submit user info update 
     const onNext = async(e)=>{
@@ -127,9 +135,6 @@ const UserInfo = ()=>{
         const addInfoError = validateAdditionalInfo(addInfoRef.current.value)
         setAddInfoError(addInfoError)
 
-        const seatsAvailError = validateAdditionalInfo(seatsAvailRef.current.value)
-        setSeatsAvailError(seatsAvailError)
-
         // If any error exists, prevent form submission
         if (waNumError || emailError || locationError || convPULocError || addInfoError) {
             return
@@ -146,7 +151,13 @@ const UserInfo = ()=>{
         
         if(updateRole == "pooler") {
             data.seatsAvail = seatsAvailRef.current.value
-            if (seatsAvailError) {
+
+            const seatsAvailError = validateSeatsAvailable(seatsAvailRef.current.value)
+            setSeatsAvailError(seatsAvailError)
+
+            const seatCostError = validateSeatCost(seatCostRef.current.value)
+            setSeatCostError(seatCostError)
+            if (seatsAvailError || seatCostError) {
                 return
             }
         }
@@ -294,7 +305,8 @@ const UserInfo = ()=>{
                 <input placeholder="Seats available" ref={seatsAvailRef} required/>
                 <div className="error-message">{seatsAvailError}</div>
 
-                <input placeholder="How much would a seat cost?" ref={seatsCostRef} required/>
+                <input placeholder="How much would a seat cost?" ref={seatCostRef} required/>
+                <div className="error-message">{seatCostError}</div>
             </>
             }
         </div>
