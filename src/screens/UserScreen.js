@@ -5,6 +5,7 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } 
 import { db } from "../firebase/config"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { randomRequests } from "../util"
 
 const UserInfo = ()=>{
     
@@ -23,11 +24,8 @@ const UserInfo = ()=>{
     const navigate = useNavigate()
     
     const eventDetails = {
-        eventId : "sundayService",
-        eventName: "CCI sunday service"  ,        
-        eventDate: "sundays",     
-        eventTime: "10am",
-        eventLocation : "cci church",
+        eventId : "B7zLmJxJM5ZAgA6Tzn9M",
+        eventName: "CCI sunday service",        
     }
     
     //form ref
@@ -181,7 +179,7 @@ const UserInfo = ()=>{
             
             //check if a userEvent subcat doc exista
             const userEvents = collection(userDoc,"userevents")
-            const userEventDoc = doc(userEvents,"sundayService")
+            const userEventDoc = doc(userEvents,eventDetails.eventId)
             const userEventDocSnapshot = await getDoc(userEventDoc)
             const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
             
@@ -200,49 +198,59 @@ const UserInfo = ()=>{
                 // create the pool request in db
                 const requestCollection = collection(db,"request")
                 const requestDoc = doc(requestCollection)
-                poolInfo.requestId = requestDoc.id
+               
                 
                 if(updateRole === "poolee"){
                     //poolee specific data
                     poolInfo = {
                         ...poolInfo,
                         seats: 4,
-                        passangerId: [user.id],
                         poolType: "pool",   
                     }
                     // create or update new userEvent
-                    await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName},{ merge: true })
-                    
-                    poolInfo.requestType = "poolRequest"
+                    await setDoc(userEventDoc,{poolId:"pending", carpoolId: "pending", eventName: eventDetails.eventName},{ merge: true })
+                     
+                     
+                    // send pool request
                     await setDoc(requestDoc,poolInfo)
+
+                    //send carpool request
+                    poolInfo.poolType = "carpool"
+                    delete poolInfo.seats
+                    await setDoc(requestDoc,poolInfo)
+                    
+                    //temp
+                    await randomRequests()
+                    
+                    // poolInfo.requestId = requestDoc.id
                     // send queue request to backend server
-                    //  for(let x = 0; x < 8; x++){
+                    //   for(let x = 0; x < 8; x++){
                  
-                    const res = await axios.post("http://localhost:3003/api/v1/process-pool-request",
-                    {
-                        ...poolInfo
-                    },
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                    //  }
+                    // const res = await axios.post("https://mappool.onrender.com/api/v1/process-pool-request",
+                    // {
+                    //     ...poolInfo
+                    // },
+                    // {
+                    //     headers: {
+                    //         'Authorization': `Bearer ${token}`,
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    // })
+                    //   }
                 }
 
                 if(updateRole  ==="pooler"){
                     // pooler specific data
                     poolInfo = {
                         ...poolInfo,
-                        seats: data.seatsAvail,
+                        seats: Number(data.seatsAvail),
                         costPerSeat: 0,
-                        poolType: "carpool",
+                        poolType: "carpoolOffer",
                     }
 
                     // create or update new userEvent
                     await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })                        
-                    poolInfo.requestType = "carpoolOffering"
+                   
                     await setDoc(requestDoc,poolInfo)
                 }
 
