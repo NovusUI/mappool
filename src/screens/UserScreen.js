@@ -5,212 +5,273 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } 
 import { db } from "../firebase/config"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { randomRequests } from "../util"
 
 const UserInfo = ()=>{
     
     const {user, updateRole, setUser,token} = useAuth()
     const [requesting, setRequesting] = useState(false)
+    const [waNumError, setWaNumError] = useState(null)
+    const [emailError, setEmailError] = useState(null)
+    const [locationError, setLocationError] = useState(null)
+    const [convPULocError, setConvPULocError] = useState(null)
+    const [addInfoError, setAddInfoError] = useState(null)
+    const [seatsAvailError, setSeatsAvailError] = useState(null)
+    const [seatCostError, setSeatCostError] = useState(null)
     console.log(updateRole)
-    const {waNum, email, location, convPULoc, addInfo,sitsAvail} = user 
+    const {waNum, email, location, convPULoc, addInfo, seatsAvail: seatsAvail, seatsCost: seatsCost} = user 
     
     const navigate = useNavigate()
     
     const eventDetails = {
-        eventId : "sundayService",
-        eventName: "CCI sunday service"  ,        
-        eventDate: "sundays",     
-        eventTime: "10am",
-        eventLocation : "cci church",
+        eventId : "B7zLmJxJM5ZAgA6Tzn9M",
+        eventName: "CCI sunday service",        
     }
- 
+    
     //form ref
-
-  
-
-    const waNumRef = useRef();
-    const emailRef = useRef();
-    const locationRef = useRef();
-    const convPULocRef = useRef();
-    const addInfoRef = useRef();
-    const sitsAvailRef = useRef();
-
-     useEffect(() => {
-
-        if( updateRole == "pooler")
-            sitsAvailRef.current.value = sitsAvail || "";
-
-        waNumRef.current.value = waNum || "" ;
-        emailRef.current.value = email;
-        locationRef.current.value = location || "";
-        convPULocRef.current.value = convPULoc || "";
-        addInfoRef.current.value = addInfo || "";
+    
+    const waNumRef = useRef()
+    const emailRef = useRef()
+    const locationRef = useRef()
+    const convPULocRef = useRef()
+    const addInfoRef = useRef()
+    const seatsAvailRef = useRef()
+    const seatCostRef = useRef()
+    
+    useEffect(() => {
+        if( updateRole == "pooler") {
+            seatsAvailRef.current.value = seatsAvail || ""
+            seatCostRef.current.value = seatsCost || ""
+        }
+        waNumRef.current.value = waNum || "" 
+        emailRef.current.value = email
+        locationRef.current.value = location || ""
+        convPULocRef.current.value = convPULoc || ""
+        addInfoRef.current.value = addInfo || ""
+    }, [])
+    
+    function validateWhatsAppNumber(value) {
+        if (!value.match(/^\d{10}$/)) {
+            return 'WhatsApp number must be 10 digits'
+        }
+        return null
+    }
+    
+    
+    function validateEmail(value) {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+        if (!value.match(emailRegex)) {
+            return 'Invalid email address'
+        }
+        return null
+    }
+    
+    function validateLocation(value) {
+        if (value.trim() === '') {
+            return 'Location is required'
+        }
+        return null
+    }
+    
+    function validateConvenientPickUpLocation(value) {
+        // Remove leading and trailing whitespace from the input
+        value = value.trim();
         
-      }, []);
+        // Split the input by comma and trim each part
+        const locations = value.split(',').map(part => part.trim());
+      
+        // Check if there are more than 3 locations
+        if (locations.length > 3) {
+          return 'You can only specify up to 3 convenient pickup locations separated by a comma';
+        }
+      
+        return null
+      }            
+    
+    function validateAdditionalInfo(value) {
+        if (value.length > 200) {
+            return 'Additional info should not exceed 200 characters'
+        }
+        return null
+    }
 
+    function validateSeatsAvailable(value) {
+        if (isNaN(value)) {
+            return 'Seats available must be a number';
+          }
+        return null
+    }
 
+    function validateSeatCost(value) {
+        if (isNaN(value)) {
+            return 'Seats available must be a number';
+          }
+        return null
+    }
+    
     // submit user info update 
-     const onNext = async(e)=>{
-         e.preventDefault()
-         
+    const onNext = async(e)=>{
+        e.preventDefault()
+
+        // Validate WhatsApp number
+        const waNumError = validateWhatsAppNumber(waNumRef.current.value)
+        setWaNumError(waNumError)
+
+        // Validate email
+        const emailError = validateEmail(emailRef.current.value)
+        setEmailError(emailError)
+
+        // Validate location
+        const locationError = validateLocation(locationRef.current.value)
+        setLocationError(locationError)
+
+        // Validate convenient pick-up location
+        const convPULocError = validateConvenientPickUpLocation(convPULocRef.current.value)
+        setConvPULocError(convPULocError)
+
+        // Validate additional info
+        const addInfoError = validateAdditionalInfo(addInfoRef.current.value)
+        setAddInfoError(addInfoError)
+
+        // If any error exists, prevent form submission
+        if (waNumError || emailError || locationError || convPULocError || addInfoError) {
+            return
+        }
         
         const data = {
-          waNum: waNumRef.current.value,
-          email: emailRef.current.value,
-          location: locationRef.current.value,
-          convPULoc: convPULocRef.current.value,
-          addInfo: addInfoRef.current.value,
-          role: updateRole
+            waNum: waNumRef.current.value,
+            email: emailRef.current.value,
+            location: locationRef.current.value,
+            convPULoc: convPULocRef.current.value,
+            addInfo: addInfoRef.current.value,
+            role: updateRole
         }
+        
+        if(updateRole == "pooler") {
+            data.seatsAvail = seatsAvailRef.current.value
 
-        if(updateRole =="pooler")
-            data.sitsAvail = sitsAvailRef.current.value
+            const seatsAvailError = validateSeatsAvailable(seatsAvailRef.current.value)
+            setSeatsAvailError(seatsAvailError)
 
+            const seatCostError = validateSeatCost(seatCostRef.current.value)
+            setSeatCostError(seatCostError)
+            if (seatsAvailError || seatCostError) {
+                return
+            }
+        }
+        
         const usersCollection = collection(db, "users")
         
         const userDoc = doc(usersCollection,user.id)
-      
+        
         try {
-            // await setDoc(userDoc, data)
-             
+            // await setDoc(userDoc, data) 
             // update user info
             await updateDoc(userDoc,data)
-        
             //update user in AuthContext
-           
             console.log(updateRole, user.role)
-
             setUser((prev)=>({
                 ...prev,
                 role: updateRole
             }))
-          
-
             console.log(user)
             // if(user.role){
-               
-               
-               
-               //check if a userEvent subcat doc exista
-                const userEvents = collection(userDoc,"userevents")
-                
-                const userEventDoc = doc(userEvents,"sundayService")
-               
-                const userEventDocSnapshot = await getDoc(userEventDoc)
-
-                const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
-
-                //execute if userrole doesnt exist or userevents subcollection component "poolId" doesn't exist for role poolee or userevents subcollection component "yourpoolId" doesnt exist for role pooler
-                if( (updateRole === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (updateRole === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
-                    setRequesting(true)
-                
-                    // poolinfo : common data
-                    let poolInfo = {
-                        ...eventDetails,
-                        poolerLoc: data.location,
-                        convPULoc: data.convPULoc,
-                        requesterId: user.id,
-                        status: "created",
-                   
-                    }
-                    
-                    // create the pool request in db
-                    const requestCollection = collection(db,"request")
-                    const requestDoc = doc(requestCollection)
-                    poolInfo.requestId = requestDoc.id
-                    
-
-                    
-                    if(updateRole === "poolee"){
-                        //poolee specific data
-                        poolInfo = {
-                            ...poolInfo,
-                            seats: 4,
-                            passangerId: [user.id],
-                            poolType: "pool",
-                            
-                        }
-                        // create or update new userEvent
-                   
-                        await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName},{ merge: true })
-                         
-                        poolInfo.requestType = "poolRequest"
-                        await setDoc(requestDoc,poolInfo)
-                        // send queue request to backend server
-                      
-
-                         //  for(let x = 0; x < 8; x++){
-                     
-                         const res = await axios.post("http://localhost:3003/api/v1/process-pool-request",
-                      
-                        {
-                            ...poolInfo
-                        },
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
-                        }
-                        )
-                        //  }
-                    }
-    
-                  
-                    if(updateRole  ==="pooler"){
-                          // pooler specific data
-                        poolInfo = {
-                            ...poolInfo,
-                            seats: data.sitsAvail,
-                            costPerSeat: 0,
-                            poolType: "carpool",
-                        }
-
-                       
-                        
-                        // create or update new userEvent
-                       await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })
-                       
-                       poolInfo.requestType = "carpoolOffering"
-                       await setDoc(requestDoc,poolInfo)
-                       
-                    }
-
-                    console.log(token)
-
-                    user.role ? navigate("/",{state: {requesting:true}}) : navigate("/contactride", {state: {requesting:true}})
-                    return
-          
-                
-                }else{
-
-                    navigate("/")
-  
-                 
+            
+            //check if a userEvent subcat doc exista
+            const userEvents = collection(userDoc,"userevents")
+            const userEventDoc = doc(userEvents,eventDetails.eventId)
+            const userEventDocSnapshot = await getDoc(userEventDoc)
+            const userEventDocData = userEventDocSnapshot.exists() ? userEventDocSnapshot.data():null
+            
+            //execute if userrole doesnt exist or userevents subcollection component "poolId" doesn't exist for role poolee or userevents subcollection component "yourpoolId" doesnt exist for role pooler
+            if( (updateRole === "poolee" && !userEventDocData?.hasOwnProperty("poolId")) || (updateRole === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")) || !userEventDocSnapshot.exists() ){
+                setRequesting(true)
+                // poolinfo : common data
+                let poolInfo = {
+                    ...eventDetails,
+                    poolerLoc: data.location,
+                    convPULoc: data.convPULoc,
+                    requesterId: user.id,
+                    status: "created",
                 }
                 
+                // create the pool request in db
+                const requestCollection = collection(db,"request")
+                const requestDoc = doc(requestCollection)
+               
+                
+                if(updateRole === "poolee"){
+                    //poolee specific data
+                    poolInfo = {
+                        ...poolInfo,
+                        seats: 4,
+                        poolType: "pool",   
+                    }
+                    // create or update new userEvent
+                    await setDoc(userEventDoc,{poolId:"pending", carpoolId: "pending", eventName: eventDetails.eventName},{ merge: true })
+                     
+                     
+                    // send pool request
+                    await setDoc(requestDoc,poolInfo)
 
-            
+                    //send carpool request
+                    poolInfo.poolType = "carpool"
+                    delete poolInfo.seats
+                    await setDoc(requestDoc,poolInfo)
+                    
+                    //temp
+                    await randomRequests()
+                    
+                    // poolInfo.requestId = requestDoc.id
+                    // send queue request to backend server
+                    //   for(let x = 0; x < 8; x++){
+                 
+                    // const res = await axios.post("https://mappool.onrender.com/api/v1/process-pool-request",
+                    // {
+                    //     ...poolInfo
+                    // },
+                    // {
+                    //     headers: {
+                    //         'Authorization': `Bearer ${token}`,
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    // })
+                    //   }
+                }
+
+                if(updateRole  ==="pooler"){
+                    // pooler specific data
+                    poolInfo = {
+                        ...poolInfo,
+                        seats: Number(data.seatsAvail),
+                        costPerSeat: 0,
+                        poolType: "carpoolOffer",
+                    }
+
+                    // create or update new userEvent
+                    await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })                        
+                   
+                    await setDoc(requestDoc,poolInfo)
+                }
+
+                console.log(token)
+
+                user.role ? navigate("/",{state: {requesting:true}}) : navigate("/contactride", {state: {requesting:true}})
+                return
+            } else {
+                navigate("/")
+            }
         } catch (error) {
             console.log(error)
         }
-        
-        
-        
-     }
-
-
-
-     //switch to role screen
-     const onChangeRole = async()=>{
-
+    }
+    
+    //switch to role screen
+    const onChangeRole = async()=>{
         user.role ? navigate("/role") : navigate("/")
-     }
+    }
 
-     
-
-
-    return (
-
+    return (    
         requesting ?
         <div className="container">
         <h3>You are being paired</h3>
@@ -226,37 +287,43 @@ const UserInfo = ()=>{
         <h5>You will be notified once we pair you</h5>
         </div>
         :
-   
-         <form onSubmit={onNext}>
-         <div className="container" >
+
+        <form onSubmit={onNext}>
+        <div className="container" >
             <h3>Let's pair you</h3>
             
-            <input placeholder="Whatsapp number" ref={waNumRef} required></input>
-            <input placeholder="Email" ref={emailRef} required></input>
-            <input placeholder="Location" ref={locationRef} required></input>
-            <input placeholder="Convenient pick-up location" ref={convPULocRef} required></input>
-            <input placeholder="Additional info" ref={addInfoRef} required></input>
-           
-            {updateRole == "pooler" && 
-             <>
-            <input placeholder="Sits available" ref={sitsAvailRef} required></input>
-            <input placeholder="how much would a sit cost?" ref={sitsAvailRef} required></input>
-             </>
-            }
+            <input placeholder="Whatsapp number" ref={waNumRef} required/>
+            <div className="error-message">{waNumError}</div>
             
+            <input placeholder="Email" ref={emailRef} required/>
+            <div className="error-message">{emailError}</div>
 
+            <input placeholder="Location" ref={locationRef} required/>
+            <div className="error-message">{locationError}</div>
+
+            <input placeholder="Convenient pick-up location" ref={convPULocRef} required/>
+            <div className="error-message">{convPULocError}</div>
+
+            <input placeholder="Additional info" ref={addInfoRef} required/>
+            <div className="error-message">{addInfoError}</div>
+           
+            {
+            updateRole == "pooler" && 
+            <>
+                <input placeholder="Seats available" ref={seatsAvailRef} required/>
+                <div className="error-message">{seatsAvailError}</div>
+
+                <input placeholder="How much would a seat cost?" ref={seatCostRef} required/>
+                <div className="error-message">{seatCostError}</div>
+            </>
+            }
         </div>
         <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-            <button>Next</button>
-            <button onClick={onChangeRole}>Change Role</button>
+        <button>Next</button>
+        <button onClick={onChangeRole}>Change Role</button>
         </div>
-        </form>
-
-      
-
-     
+        </form>     
     )
-    
 }
-
+    
 export default UserInfo

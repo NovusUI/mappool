@@ -12,7 +12,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import AdminScreen from '../screens/AdminScreen';
+import { completelyRandomPath } from '../util';
 
 const Nav = ()=>{
 
@@ -79,6 +80,7 @@ const Nav = ()=>{
           <Route path ={user.role? "/":"/contactride"} element={<ContactYourRide/>}/>
           <Route path={user.role ?'/role':"/"} element={<Role/>}/>
           <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
+          <Route path={completelyRandomPath} element={<AdminScreen/>}/>
           </Routes>
           
         )}
