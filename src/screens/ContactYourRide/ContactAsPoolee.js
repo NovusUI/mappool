@@ -28,13 +28,13 @@ const Contact = ({type})=>{
      
 
     //temp
-    const [hideApplyButton,setHideApplyButton] = useState(false)
+    // const [hideApplyButton,setHideApplyButton] = useState(false)
 
     //temporary
-    const eventDetails = {
-      eventId : "B7zLmJxJM5ZAgA6Tzn9M",
-      eventName: "CCI sunday service",        
-  }
+  //   const eventDetails = {
+  //     eventId : "B7zLmJxJM5ZAgA6Tzn9M",
+  //     eventName: "CCI sunday service",        
+  // }
 
 
 
@@ -55,32 +55,32 @@ const Contact = ({type})=>{
     const userEventDoc = doc(userEvents,"B7zLmJxJM5ZAgA6Tzn9M")
 
 
-    const applForCarpool = async()=>{
+    // const applForCarpool = async()=>{
 
-        //temp
-      const poolInfo = {
-        ...eventDetails,
-        poolerLoc: user.location,
-        convPULoc: user.convPULoc,
-        requesterId: user.id,
-        status: "created",
-        poolType: "carpool"
-      }
+    //     //temp
+    //   const poolInfo = {
+    //     ...eventDetails,
+    //     poolerLoc: user.location,
+    //     convPULoc: user.convPULoc,
+    //     requesterId: user.id,
+    //     status: "created",
+    //     poolType: "carpool"
+    //   }
 
-      await setDoc(userEventDoc,{carpoolId: "pending", eventName: eventDetails.eventName},{ merge: true })
-      // create the pool request in db
-      const requestCollection = collection(db,"request")
-      const requestDoc = doc(requestCollection)
+    //   await setDoc(userEventDoc,{carpoolId: "pending", eventName: eventDetails.eventName},{ merge: true })
+    //   // create the pool request in db
+    //   const requestCollection = collection(db,"request")
+    //   const requestDoc = doc(requestCollection)
 
-      console.log(poolInfo)
-    try {
-      await setDoc(requestDoc,poolInfo)
-    } catch (error) {
-      console.log(error)
-    }
+    //   console.log(poolInfo)
+    // try {
+    //   await setDoc(requestDoc,poolInfo)
+    // } catch (error) {
+    //   console.log(error)
+    // }
       
 
-    }
+    // }
 
     const unsubscribeUserEvents = onSnapshot(userEventDoc, (docSnapshot) => {
         if (docSnapshot.exists()) {
@@ -100,11 +100,11 @@ const Contact = ({type})=>{
             setCarPoolFound(true)
             setcarPoolId(carPoolStatus)
           }
-          //temp
-          if(carPoolStatus){
+          // //temp
+          // if(carPoolStatus){
            
-            setHideApplyButton(true)
-          }
+          //   setHideApplyButton(true)
+          // }
           
         } else {
           console.log('Document does not exist');
@@ -210,7 +210,7 @@ const Contact = ({type})=>{
             </svg>
             Join group
           </button>
-          <button   hidden={hideApplyButton} onClick={applForCarpool}>Apply</button>
+          {/* <button   hidden={hideApplyButton} onClick={applForCarpool}>Apply</button> */}
           </>
         }
         {
