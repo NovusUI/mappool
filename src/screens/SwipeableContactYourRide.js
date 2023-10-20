@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import Contact from "./ContactYourRide/Contact";
+import Contact from "./ContactYourRide/ContactAsPoolee";
 import SwitchBox from "../components/SwitchBox";
 
 const types = [

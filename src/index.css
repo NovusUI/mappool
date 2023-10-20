@@ -61,6 +61,10 @@ body, h1, h2, h3, p, ul, ol, li {
     background-color: #0056b3; /* Set button background color on hover */
   }
   
+
+  .onselect{
+    background-color: #0056b3
+  }
   .container{
     
     padding: 20px;

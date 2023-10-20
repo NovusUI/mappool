@@ -16,6 +16,7 @@ const Role = ()=>{
         setUpdateRole(
             user.role
         )
+        localStorage.setItem("updateRole",user.role)
     },[])
 
     console.log(updateRole)
@@ -23,6 +24,7 @@ const Role = ()=>{
     const setRole = (role) =>{
 
         setUpdateRole(role)
+        localStorage.setItem("updateRole",role)
     }
    
     // go to the next page [userscreen]
@@ -38,11 +40,13 @@ const Role = ()=>{
         }
     }
 
+    
+
     return<>
         <div className="container">
             <h3>Choose Role</h3>
-            <button onClick={()=>setRole("pooler")}>Pooler</button>
-            <button onClick={()=>setRole("poolee")}>Poolee</button>
+            <button onClick={()=>setRole("pooler")} className={updateRole === "pooler" ?  "onselect": "group-btn"}>Pooler</button>
+            <button onClick={()=>setRole("poolee")} className={updateRole === "poolee" ?  "onselect": "group-btn"} >Poolee</button>
         </div>
         <div  className="container" style={{backgroundColor:"#2F2F2F"}}>
             <button onClick={()=>next()}>Next</button>

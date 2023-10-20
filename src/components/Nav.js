@@ -5,7 +5,7 @@ import Login from '../screens/LoginScreen';
 import Request from '../screens/RequestScreen';
 import Role from "../screens/RoleScreen"
 import SignUp from "../screens/SignUpScreen"
-import UserInfo from "../screens/UserScreen"
+import UserInfo from "../screens/UserScreen/UserScreen"
 import SwipeableContactYourRide from "../screens/SwipeableContactYourRide"
 import { useAuth } from '../contextAPI/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import AdminScreen from '../screens/AdminScreen';
-import { completelyRandomPath } from '../util';
+import { completelyRandomPath } from '../util.js';
 
 const Nav = ()=>{
 
@@ -77,8 +77,8 @@ const Nav = ()=>{
           <Routes>
           <Route exact path="/userinfo" element={<UserInfo/>} />
           <Route path="/request"  element={<Request/>} />
-          <Route path ={user.role? "/":"/contactride"} element={<ContactYourRide/>}/>
           <Route path={user.role ?'/role':"/"} element={<Role/>}/>
+          <Route path ={"/"} element={<ContactYourRide/>}/>
           <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
           <Route path={completelyRandomPath} element={<AdminScreen/>}/>
           </Routes>
