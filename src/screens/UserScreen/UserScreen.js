@@ -57,7 +57,7 @@ const UserInfo = ()=>{
     }, [])
     
     function validateWhatsAppNumber(value) {
-        if (!value.match(/^\d{10}$/)) {
+        if (!value.match(/^\d{11}$/)) {
             return 'WhatsApp number must be 10 digits'
         }
         return null
@@ -118,7 +118,7 @@ const UserInfo = ()=>{
     // submit user info update 
     const onNext = async(e)=>{
         e.preventDefault()
-        setRequesting(true)
+        
         // Validate WhatsApp number
         const waNumError = validateWhatsAppNumber(waNumRef.current.value)
         setWaNumError(waNumError)
@@ -165,7 +165,7 @@ const UserInfo = ()=>{
                 return
             }
         }
-        
+        setRequesting(true)
         const usersCollection = collection(db, "users")
         
         const userDoc = doc(usersCollection,user.id)
