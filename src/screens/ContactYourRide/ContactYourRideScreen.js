@@ -3,8 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom"
 import "../../index.css"
 import { useEffect, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
-import SwipeableContactYourRide from "../SwipeableContactYourRide"
+import SwipeableContactYourRide from "./SwipeableContactYourRide"
 import ContactAsPooler from "./ContactAsPooler"
+import { collection, doc, getDoc } from "firebase/firestore"
+import { db } from "../../firebase/config"
+import AvailableRides from "../AvailableRIdes/AvailableRides"
 
 
 
@@ -13,48 +16,51 @@ const ContactYourRide = ()=>{
     const location = useLocation()
     const navigate = useNavigate()
     const[requesting, setRequesting] = useState(false)
-    const [poolFound, setPoolFound] = useState(false)
-    const [poolType, setPoolType] = useState("pool")
-    
+    const [poolId,setPoolId] = useState(null)
+    const [carpoolId, setCarpoolId] = useState(null)
+     
 
-    const {user, updateRole} = useAuth()
+
+    const {user, updateRole, setUpdateRole} = useAuth()
  
     useEffect(()=>{
         const state = location?.state
         setRequesting(state?.requesting)
+
+        const getUserEventSnapShot = async() => {
+            const usersCollection = collection(db, "users")
+            const userDoc = doc(usersCollection,user.id)
+
+            const userEvents = collection(userDoc,"userevents")
+            const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
+            const userEventDocSnapshot = await getDoc(userEventDoc)
+            const {role,poolId,carpoolId}= userEventDocSnapshot.data()
+            setUpdateRole(role)
+            setPoolId(poolId)
+            setCarpoolId(carpoolId)
+      
+        }
+        
+        getUserEventSnapShot()
+
     },[location])
 
-
+    
+    const poolExists =  ((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending"))
 
     return(
 
-    requesting ?(
-   
-     <>
-        <div className="container">
-        <h3>Request has been saved</h3>
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="50" r="49" stroke="#1FD431" stroke-width="2"/>
-        </svg>
-        
-    </div>
-    <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-       <button onClick={()=>{setRequesting(false)}}>Next</button>
-        <button  className="danger-btn" onClick={()=>navigate("/userinfo")}>Go back</button>
-    </div>
-     </>  
-    
-    ) : (
         updateRole =="poolee" || (!updateRole && user.role == "poolee") ?
         <>
-            <SwipeableContactYourRide/>
+          {
+            poolExists ? <SwipeableContactYourRide/> :<AvailableRides/>
+          
+          }
         </>
         :
         <ContactAsPooler/>
-        
-      
 
-    )
+    
     )
 
 }

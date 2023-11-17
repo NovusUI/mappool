@@ -23,16 +23,13 @@ const ContactAsPooler = ()=>{
     const usersCollection = collection(db, "users")
     const userDoc = doc(usersCollection,user.id)
     const userEvents = collection(userDoc,"userevents")
-    const userEventDoc = doc(userEvents,"B7zLmJxJM5ZAgA6Tzn9M")
+    const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
 
     const unsubscribeUserEvents = onSnapshot(userEventDoc, (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           const yourPoolStatus = data.yourPoolId;
-        
-         
-          
-      
+   
           if (yourPoolStatus  && yourPoolStatus  !== 'pending') {
             // Handle the case where the "status" field changes from "pending"
             setCarPoolCreated(true)

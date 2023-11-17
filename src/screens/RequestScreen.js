@@ -6,7 +6,7 @@ const Request = ()=>{
     return(
     !false ?
        <>
-    
+      <h3>{localStorage.getItem("eventName")}</h3>
     <div className="container">
         <h3>You are being paired</h3>
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -23,6 +23,7 @@ const Request = ()=>{
     </>
     :
     <>
+    <h3>{localStorage.getItem("eventName")}</h3>
     <div className="container">
         <h3>Request has been saved</h3>
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">

@@ -52,7 +52,7 @@ const Contact = ({type})=>{
     const usersCollection = collection(db, "users")
     const userDoc = doc(usersCollection,user.id)
     const userEvents = collection(userDoc,"userevents")
-    const userEventDoc = doc(userEvents,"B7zLmJxJM5ZAgA6Tzn9M")
+    const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
 
 
     // const applForCarpool = async()=>{
@@ -142,7 +142,7 @@ const Contact = ({type})=>{
 
 
    useEffect(()=>{
-     console.log("?")
+
     if(carpoolId){
       
       const poolCollection = collection(db,"pool")
@@ -197,7 +197,8 @@ const Contact = ({type})=>{
 
 
     return(
-
+     <>
+     
       <div className="container">
         <h3>Contact your {type === 'carpool' ? 'ride' : 'pool'}</h3>
        
@@ -260,6 +261,7 @@ const Contact = ({type})=>{
           </p>
         }
       </div>
+      </>
     )
 
 }

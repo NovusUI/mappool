@@ -34,7 +34,7 @@ body, h1, h2, h3, p, ul, ol, li {
   }
   
   /* Add global styles for buttons */
-  button {
+  button, .ride-offers {
     cursor: pointer;
     background-color: #78A9FA; /* Set button background color */
     color: #fff; /* Set button text color */
@@ -45,6 +45,23 @@ body, h1, h2, h3, p, ul, ol, li {
     border-radius: 15px;
     transition: background-color 0.2s;
     margin: 5px 0;
+  }
+  .ride-offers{
+    background-color: #fff;
+    color: #3F4246;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ride-offers button{
+    width: 30px;
+    height: 30px;
+    background-color: #4DE55C;
+  }
+
+  .ride-offers button:first-child{
+    background-color:#FF3A3A;
   }
 
   input{

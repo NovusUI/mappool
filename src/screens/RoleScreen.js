@@ -1,22 +1,23 @@
 import "../index.css"
-import { db } from "../firebase/config"
 import { useAuth } from "../contextAPI/AuthContext"
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 
 const Role = ()=>{
    
-    const { user, updateRole, setUpdateRole} = useAuth()
+    const { updateRole, setUpdateRole} = useAuth()
     const navigate = useNavigate()
     // update user with the role 
 
     
 
     useEffect(()=>{
+
+        const role = localStorage.getItem("updateRole")
         setUpdateRole(
-            user.role
+           role
         )
-        localStorage.setItem("updateRole",user.role)
+        
     },[])
 
     console.log(updateRole)
@@ -25,6 +26,7 @@ const Role = ()=>{
 
         setUpdateRole(role)
         localStorage.setItem("updateRole",role)
+       
     }
    
     // go to the next page [userscreen]
@@ -40,9 +42,15 @@ const Role = ()=>{
         }
     }
 
+    const goToEvents = ()=>{
+
+        updateRole ? navigate("/events") : navigate("/")
+    }
+
     
 
     return<>
+        <h3>{localStorage.getItem("eventName")}</h3>
         <div className="container">
             <h3>Choose Role</h3>
             <button onClick={()=>setRole("pooler")} className={updateRole === "pooler" ?  "onselect": "group-btn"}>Pooler</button>
@@ -50,6 +58,7 @@ const Role = ()=>{
         </div>
         <div  className="container" style={{backgroundColor:"#2F2F2F"}}>
             <button onClick={()=>next()}>Next</button>
+            <button onClick={()=>goToEvents()}>Change Event</button>
         </div>
     </>
 }

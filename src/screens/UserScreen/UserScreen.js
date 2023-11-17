@@ -18,14 +18,14 @@ const UserInfo = ()=>{
     const [addInfoError, setAddInfoError] = useState(null)
     const [seatsAvailError, setSeatsAvailError] = useState(null)
     const [seatCostError, setSeatCostError] = useState(null)
-    console.log(updateRole, user.role)
+
     const {waNum, email, location, convPULoc, addInfo, seatsAvail: seatsAvail, seatsCost: seatsCost} = user 
     
     const navigate = useNavigate()
     
     const eventDetails = {
-        eventId : "B7zLmJxJM5ZAgA6Tzn9M",
-        eventName: "CCI sunday service",        
+        eventId : localStorage.getItem("eventId"),
+        eventName: localStorage.getItem("eventName"),        
     }
     
     //form ref
@@ -40,7 +40,8 @@ const UserInfo = ()=>{
     
     useEffect(() => {
         
-         setUpdateRole(localStorage.getItem("updateRole") || user.role)
+        // removed user.role
+         setUpdateRole(localStorage.getItem("updateRole"))
         if( updateRole == "pooler" || localStorage.getItem("updateRole") == "pooler") {
           
             seatsAvailRef.current.value = seatsAvail || ""
@@ -150,7 +151,6 @@ const UserInfo = ()=>{
             location: locationRef.current.value,
             convPULoc: convPULocRef.current.value,
             addInfo: addInfoRef.current.value,
-            role: updateRole
         }
         
         if(updateRole == "pooler") {
@@ -177,7 +177,8 @@ const UserInfo = ()=>{
             // update user info
             await updateDoc(userDoc,data)
             //update user in AuthContext
-            console.log(updateRole, user.role)
+
+            
             setUser((prev)=>({
                 ...prev,
                 ...data
@@ -197,50 +198,68 @@ const UserInfo = ()=>{
             ...eventDetails,
             poolerLoc: data.location,
             convPULoc: data.convPULoc,
-            requesterId: user.id,
+            poolAdmin: user.id,
             status: "created",
         }
          // create the pool request in db
-         const requestCollection = collection(db,"request")
-         const requestDoc = doc(requestCollection)
+         const poolCollection = collection(db,"pool")
+         const poolDoc = doc(poolCollection)
         
+ 
 
         if(updateRole === "poolee" && (!userEventDocData?.hasOwnProperty("poolId") || !userEventDocData?.hasOwnProperty("carpoolId")) ){
+           
+            if(!userEventDocData?.hasOwnProperty("poolId") && !userEventDocData?.hasOwnProperty("carpoolId")){
+                if(!userEventDocSnapshot.exists()){
+                    // create or update new userEvent
+                    await setDoc(userEventDoc,{poolId:"pending",carpoolId:"pending", role: updateRole, eventName: eventDetails.eventName},{ merge: true })
+                }else{
+                    await setDoc(userEventDoc,{poolId:"pending",carpoolId:"pending",role: updateRole},{ merge: true })
+                }
 
-
-            if(!userEventDocData?.hasOwnProperty("poolId")){
-                poolInfo = {
-                    ...poolInfo,
-                    seats: 4,
-                    poolType: "pool",   
-                } 
+                
+            }
+            
+            else if(!userEventDocData?.hasOwnProperty("poolId") ){
+               
 
                 // if user events doesnt exist, create one, else update existing event
 
                 if(!userEventDocSnapshot.exists()){
                     // create or update new userEvent
-                    await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName},{ merge: true })
+                    await setDoc(userEventDoc,{poolId:"pending", eventName: eventDetails.eventName, role: updateRole,},{ merge: true })
                 }else{
-                    await setDoc(userEventDoc,{poolId:"pending"},{ merge: true })
+                    await setDoc(userEventDoc,{poolId:"pending",role: updateRole,},{ merge: true })
                 }
-                await setDoc(requestDoc,poolInfo)
+                 //implement maybe later
+                // poolInfo = {
+                //     ...poolInfo,
+                //     seats: 4,
+                //     poolType: "pool",   
+                // } 
+                //implement later
+                // await setDoc(poolDoc,poolInfo)
 
             }
-            if(!userEventDocData?.hasOwnProperty("carpoolId")){
-                poolInfo = {
-                    ...poolInfo,
-                    poolType: "carpool",   
-                } 
+            else if(!userEventDocData?.hasOwnProperty("carpoolId")){
+               
 
                 // if user events doesnt exist, create one, else update existing event
 
                 if(!userEventDocSnapshot.exists()){
                     // create or update new userEvent
-                    await setDoc(userEventDoc,{carpoolId:"pending", eventName: eventDetails.eventName},{ merge: true })
+                    await setDoc(userEventDoc,{carpoolId:"pending", eventName: eventDetails.eventName,role: updateRole},{ merge: true })
                 }else{
-                    await setDoc(userEventDoc,{carpoolId:"pending"},{ merge: true })
+                    await setDoc(userEventDoc,{carpoolId:"pending",role: updateRole},{ merge: true })
                 }
-                await setDoc(requestDoc,poolInfo)
+             
+                 //implement maybe later
+                // poolInfo = {
+                //     ...poolInfo,
+                //     poolType: "carpool",   
+                // } 
+                //implement maybe later
+                // await setDoc(poolDoc,poolInfo)
             }
             navigate("/",{state: {requesting:true}}) 
 
@@ -255,15 +274,17 @@ const UserInfo = ()=>{
             
             if(!userEventDocSnapshot.exists()){
             // create or update new userEvent
-                await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })                        
+                await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName,role: updateRole},{ merge: true })                        
             }
             else{
-                await setDoc(userEventDoc,{yourPoolId:"pending"},{ merge: true }) 
+                await setDoc(userEventDoc,{yourPoolId:"pending", role: updateRole},{ merge: true }) 
             }
-            await setDoc(requestDoc,poolInfo)
+            await setDoc(poolDoc,poolInfo)
             navigate("/",{state: {requesting:true}}) 
 
         }else{
+            console.log(updateRole)
+            await setDoc(userEventDoc,{role: updateRole},{ merge: true })   
             navigate("/")
         }
 
@@ -282,8 +303,8 @@ const UserInfo = ()=>{
             //     }
                 
             //     // create the pool request in db
-            //     const requestCollection = collection(db,"request")
-            //     const requestDoc = doc(requestCollection)
+            //     const poolCollection = collection(db,"request")
+            //     const poolDoc = doc(poolCollection)
                
                 
             //     if(updateRole === "poolee"){
@@ -298,17 +319,17 @@ const UserInfo = ()=>{
                      
                      
             //         // send pool request
-            //         await setDoc(requestDoc,poolInfo)
+            //         await setDoc(poolDoc,poolInfo)
      
             //         //send carpool request
             //         poolInfo.poolType = "carpool"
             //         delete poolInfo.seats
-            //         await setDoc(requestDoc,poolInfo)
+            //         await setDoc(poolDoc,poolInfo)
                     
             //         //temp
             //         // await randomRequests()
                     
-            //         // poolInfo.requestId = requestDoc.id
+            //         // poolInfo.requestId = poolDoc.id
             //         // send queue request to backend server
             //         //   for(let x = 0; x < 8; x++){
                  
@@ -337,7 +358,7 @@ const UserInfo = ()=>{
             //         // create or update new userEvent
             //         await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName},{ merge: true })                        
                    
-            //         await setDoc(requestDoc,poolInfo)
+            //         await setDoc(poolDoc,poolInfo)
             //     }
 
             //     console.log(token)
@@ -354,11 +375,12 @@ const UserInfo = ()=>{
     
     //switch to role screen
     const onChangeRole = async()=>{
-        user.role ? navigate("/role") : navigate("/")
+         navigate("/role")
     }
 
     return (    
         requesting ?
+  
         <div className="container">
         <h3>You are being paired</h3>
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -372,8 +394,10 @@ const UserInfo = ()=>{
         </svg>
         <h5>You will be notified once we pair you</h5>
         </div>
+     
         :
-
+        <>
+        <h3>{localStorage.getItem("eventName")}</h3>
         <form onSubmit={onNext}>
         <div className="container" >
             <h3>Let's pair you</h3>
@@ -394,7 +418,7 @@ const UserInfo = ()=>{
             <div className="error-message">{addInfoError}</div>
            
             {
-            (updateRole == "pooler" || localStorage.getItem("updateRole")  == "pooler" ||(!(updateRole &&  localStorage.getItem("updateRole")) &&( user.role === "pooler")) )&& 
+            (updateRole == "pooler" || localStorage.getItem("updateRole")  == "pooler"  )&& 
             <>
                 <input placeholder="Seats available" ref={seatsAvailRef} required/>
                 <div className="error-message">{seatsAvailError}</div>
@@ -405,10 +429,11 @@ const UserInfo = ()=>{
             }
         </div>
         <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-        <button>Next</button>
+        <button>Looks Good</button>
         <button onClick={onChangeRole}>Change Role</button>
         </div>
-        </form>     
+        </form>  
+        </>   
     )
 }
     
