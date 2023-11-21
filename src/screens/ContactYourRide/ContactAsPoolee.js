@@ -5,8 +5,9 @@ import { useEffect, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
 import { collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
+import { useApp } from "../../contextAPI/AppContext"
 
-const Contact = ()=>{
+const Contact = ({setSwitchScreen})=>{
 
     const location = useLocation()
     const[requesting, setRequesting] = useState(false)
@@ -24,20 +25,33 @@ const Contact = ()=>{
     const [textareaValue, setTextareaValue] = useState('');
     const [buttonMsg, setButtonMsg] = useState("Too short")
     const [poolHailerStatus, setPoolHailerStatus] = useState(null)
+    const [isDisabled, setIsDisabled] = useState(false)
     const navigate = useNavigate()
-   
-
+    
+    const [isWaiting, setIsWaiting] = useState(true)
+    const eventId = localStorage.getItem("eventId")
     
     
+    useEffect(()=>{
+      console.log(poolStatus)
+        if(poolStatus)
+          setIsWaiting(false)
+    },[poolStatus])
    
     useEffect(()=>{
-       console.log("heres")
+
+      if(!eventId){
+        navigate("/events")
+      }
+      
+      setIsWaiting(true)
+     
       const getEventDoc = async()=>{
 
           const usersCollection = collection(db, "users")
           const userDoc = doc(usersCollection,user.id)
           const userEvents = collection(userDoc,"userevents")
-          const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
+          const userEventDoc = doc(userEvents,eventId)
 
           seteventDocRef(userEventDoc)
           const userEventDocData= await getDoc(userEventDoc)
@@ -82,11 +96,11 @@ const Contact = ()=>{
        setPoolRef(poolDoc)
        const  unsubscribePool = onSnapshot(poolDoc,(docSnapshot)=>{
          if(docSnapshot.exists()){
-
+        
            const data  = docSnapshot.data()
            const poolStatus = data.status
           
-           
+            
            setPoolStatus(poolStatus)
            if((poolStatus === "created" || poolStatus === "closed") && poolHailerStatus === "accepted" ){
               setValidate(true)
@@ -101,7 +115,7 @@ const Contact = ()=>{
             setValidate(true)
             setLeaveAMsg(true)
            }
-           
+
            else{
             setValidate(false)
             setLeaveAMsg(false)
@@ -113,8 +127,11 @@ const Contact = ()=>{
           setLeaveAMsg(false)
           setValidateMessage("pool is closed or cancelled")
          }
+        
        })
-
+  
+       
+        
        return ()=> unsubscribePool()
       
       }
@@ -138,15 +155,16 @@ const Contact = ()=>{
             
             const data  = snapshot.data()
             console.log(data)
-            const status = data.poolHailerStatus
+            const status = data.poolHailerStatus 
             if(status){
               console.log(status)
               setPoolHailerStatus(status)
+              
             }
            }
         })
 
-
+        
     return ()=> unsubscribeHaillers()
     }
 
@@ -164,14 +182,16 @@ const Contact = ()=>{
   };
 
   const cancelRide = async() => {
-
+     
+    setIsDisabled(true)
      const poolStatus= type === "carpool" && {carpoolId: "pending"} || {poolId: "pending"}
      const poolCollection = collection(db,"pool")
      const poolDoc = doc(poolCollection,poolId)
      const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
      const poolHailerDocREf = doc(poolHailersSubcollection,user.id)
-
-     await deleteDoc(poolHailerDocREf)
+     
+     try {
+      await deleteDoc(poolHailerDocREf)
 
      if(type){
         if(validate){
@@ -186,7 +206,14 @@ const Contact = ()=>{
        }
        
      }
-     navigate("/")
+     setSwitchScreen(false)
+     
+      
+     } catch (error) {
+       console.error(error)
+      setIsDisabled(false)
+     }
+     
      
 
   }
@@ -211,6 +238,7 @@ const Contact = ()=>{
   const saveShortMsg = async(e) => {
     console.log(textareaValue.length > 10, textareaValue.length < 50)
     if(textareaValue.length > 10 && textareaValue.length <= 50){
+      setIsDisabled(true)
       console.log("yas")
       const poolHailersSubcollection = collection(poolRef, 'poolHailers')
       const newHailerDocRef = doc(poolHailersSubcollection, user.id);
@@ -224,8 +252,15 @@ const Contact = ()=>{
       }
       
       console.log(hailerData)
-  
-      await updateDoc(newHailerDocRef, hailerData)
+      
+      try {
+        await updateDoc(newHailerDocRef, hailerData)
+      } catch (error) {
+        console.error(error)
+        setIsDisabled(false)
+      }
+      
+      setIsDisabled(false)
        
        setShowTextArea(false)
     }
@@ -236,11 +271,15 @@ const Contact = ()=>{
 
 
     return(
+
+      
+      isWaiting && <div>Waiting...</div> ||
+       
      <>
      
       <div className="container">
       <h3>Contact your {type === 'carpool' ? 'ride' : 'pool group'}</h3>
-       
+   
        {
         showTextArea &&
          <>
@@ -249,7 +288,7 @@ const Contact = ()=>{
          </>
          ||
          <>
-         <button className={(validate) ? "group-btn":"inactive"} onClick={joinCarpoolGroup} disabled={!validate} >
+         <button className={ isDisabled || (validate) ? "group-btn":"inactive"} onClick={joinCarpoolGroup} disabled={!validate || isDisabled } >
            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.184299 19.3314C0.102479 19.6284 0.372969 19.9025 0.671019 19.8247L5.27836 18.6213C6.73272 19.409 8.37012 19.8275 10.0372 19.8275H10.0422C15.5282 19.8275 20.0001 15.3815 20.0001 9.9163C20.0001 7.26735 18.9661 4.77594 17.0864 2.90491C15.2066 1.03397 12.7085 0 10.0421 0C4.55619 0 0.0842292 4.44605 0.0842292 9.9114C0.0835992 11.65 0.542519 13.3582 1.41491 14.8645L0.184299 19.3314ZM2.86104 15.2629C2.96786 14.8752 2.91449 14.4608 2.71293 14.1127C1.97278 12.8348 1.5837 11.3855 1.58423 9.9114C1.58423 5.28158 5.3775 1.5 10.0421 1.5C12.312 1.5 14.4297 2.37698 16.0282 3.96805C17.6249 5.55737 18.5001 7.66611 18.5001 9.9163C18.5001 14.5459 14.7069 18.3275 10.0422 18.3275H10.0372C8.62072 18.3275 7.22875 17.9718 5.99278 17.3023C5.65826 17.1211 5.26738 17.0738 4.89928 17.17L2.13688 17.8915L2.86104 15.2629Z" fill="white"/>
            </svg>
@@ -261,10 +300,10 @@ const Contact = ()=>{
        }
        {
         showTextArea &&
-         <button className={(textareaValue.length <10 || textareaValue.length>50) && "inactive"} onClick={saveShortMsg} disabled={textareaValue.length <10 || textareaValue.length>50}>{buttonMsg}</button>
+         <button className={(isDisabled || textareaValue.length <10 || textareaValue.length>50) && "inactive"} onClick={saveShortMsg} disabled={textareaValue.length <10 || textareaValue.length>50 || isDisabled}>{buttonMsg}</button>
          ||
          <>
-         <button className={"danger-btn"} onClick={cancelRide}  disabled={!poolId}>
+         <button className={isDisabled && "inactive" || "danger-btn"} onClick={cancelRide}  disabled={!poolId || isDisabled}>
              { !validate && "Back" || "Cancel Ride"}
          </button>
    

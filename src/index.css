@@ -1,5 +1,5 @@
 /* Reset some default browser styles */
-body, h1, h2, h3, p, ul, ol, li {
+body, h1, h2, h3, p, ul, ol, li,div {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -140,4 +140,36 @@ body, h1, h2, h3, p, ul, ol, li {
   .quick-action button{
     width: 30%;
     height: 5vh;
+  }
+
+  .passenger-quick-action{
+    width: 100vw;
+    height: 90vh;
+    overflow: scroll;
+
+
+  }
+  .passenger{
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: x-large;
+    color: #f0f0f0;
+  }
+
+  .passenger button{
+    height: 4vh;
+    width: 30vw;
+  }
+  .x-cancel-btn{
+    width: 10vw;
+    height: 10vw;
+    background-color: inherit;
+    font-size: large;
+  }
+
+  .x-cancel-btn:hover{
+    background-color: #3F4246;
   }

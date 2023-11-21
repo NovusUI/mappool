@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null)
   const [updateRole, setUpdateRole] = useState("")
  
-
+  
   const popupLogin = async() => {
      try {
         const userCred = await signInWithPopup(auth, new GoogleAuthProvider())
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole, setToken,token }}>
+    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole, setToken,token,  }}>
       {children}
     </AuthContext.Provider>
   );

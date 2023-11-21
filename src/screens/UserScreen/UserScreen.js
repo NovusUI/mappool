@@ -10,7 +10,7 @@ import axios from "axios"
 const UserInfo = ()=>{
     
     const {user, updateRole, setUser,token,setUpdateRole} = useAuth()
-    const [requesting, setRequesting] = useState(false)
+    // const [requesting, setRequesting] = useState(false)
     const [waNumError, setWaNumError] = useState(null)
     const [emailError, setEmailError] = useState(null)
     const [locationError, setLocationError] = useState(null)
@@ -18,14 +18,18 @@ const UserInfo = ()=>{
     const [addInfoError, setAddInfoError] = useState(null)
     const [seatsAvailError, setSeatsAvailError] = useState(null)
     const [seatCostError, setSeatCostError] = useState(null)
+    const [isDisabled, setIsDisabled] = useState(false)
 
     const {waNum, email, location, convPULoc, addInfo, seatsAvail: seatsAvail, seatsCost: seatsCost} = user 
     
     const navigate = useNavigate()
-    
+    const eventId = localStorage.getItem("eventId")
+    const eventName = localStorage.getItem("eventName") 
+    const eventRole = localStorage.getItem("updateRole")
+
     const eventDetails = {
-        eventId : localStorage.getItem("eventId"),
-        eventName: localStorage.getItem("eventName"),        
+        eventId,
+        eventName,       
     }
     
     //form ref
@@ -39,10 +43,19 @@ const UserInfo = ()=>{
     const seatCostRef = useRef()
     
     useEffect(() => {
+
+
+
+        if(!eventId || !eventName || !eventRole){
+            navigate("/events")
+        }
         
         // removed user.role
-         setUpdateRole(localStorage.getItem("updateRole"))
-        if( updateRole == "pooler" || localStorage.getItem("updateRole") == "pooler") {
+         setUpdateRole(eventRole)
+         //|| localStorage.getItem("updateRole") == "pooler"
+
+
+        if( updateRole == "pooler") {
           
             seatsAvailRef.current.value = seatsAvail || ""
             seatCostRef.current.value = seatsCost || ""
@@ -120,6 +133,7 @@ const UserInfo = ()=>{
     const onNext = async(e)=>{
         e.preventDefault()
         
+        setIsDisabled(true)
         // Validate WhatsApp number
         const waNumError = validateWhatsAppNumber(waNumRef.current.value)
         setWaNumError(waNumError)
@@ -142,6 +156,7 @@ const UserInfo = ()=>{
 
         // If any error exists, prevent form submission
         if (waNumError || emailError || locationError || convPULocError || addInfoError) {
+            setIsDisabled(false)
             return
         }
         
@@ -165,7 +180,7 @@ const UserInfo = ()=>{
                 return
             }
         }
-        setRequesting(true)
+        // setRequesting(true)
         const usersCollection = collection(db, "users")
         
         const userDoc = doc(usersCollection,user.id)
@@ -261,7 +276,7 @@ const UserInfo = ()=>{
                 //implement maybe later
                 // await setDoc(poolDoc,poolInfo)
             }
-            navigate("/",{state: {requesting:true}}) 
+            navigate("/") 
 
         }else if(updateRole === "pooler" && !userEventDocData?.hasOwnProperty("yourPoolId")){
             // pooler specific data
@@ -280,7 +295,7 @@ const UserInfo = ()=>{
                 await setDoc(userEventDoc,{yourPoolId:poolDoc.id, role: updateRole},{ merge: true }) 
             }
             await setDoc(poolDoc,poolInfo)
-            navigate("/",{state: {requesting:true}}) 
+            navigate("/") 
 
         }else{
             console.log(updateRole)
@@ -370,6 +385,7 @@ const UserInfo = ()=>{
             // }
         } catch (error) {
             console.log(error)
+            setIsDisabled(false)
         }
     }
     
@@ -379,25 +395,25 @@ const UserInfo = ()=>{
     }
 
     return (    
-        requesting ?
+        // requesting ?
   
-        <div className="container">
-        <h3>You are being paired</h3>
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="50" r="48.75" stroke="url(#paint0_linear_7_243)" stroke-width="2.5"/>
-        <defs>
-        <linearGradient id="paint0_linear_7_243" x1="78.5" y1="75.5" x2="93.5" y2="66" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#1FD431"/>
-        <stop offset="0.95568" stop-color="#1FD431" stop-opacity="0"/>
-        </linearGradient>
-        </defs>
-        </svg>
-        <h5>You will be notified once we pair you</h5>
-        </div>
+        // <div className="container">
+        // <h3>You are being paired</h3>
+        // <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
+        // <circle cx="50" cy="50" r="48.75" stroke="url(#paint0_linear_7_243)" stroke-width="2.5"/>
+        // <defs>
+        // <linearGradient id="paint0_linear_7_243" x1="78.5" y1="75.5" x2="93.5" y2="66" gradientUnits="userSpaceOnUse">
+        // <stop stop-color="#1FD431"/>
+        // <stop offset="0.95568" stop-color="#1FD431" stop-opacity="0"/>
+        // </linearGradient>
+        // </defs>
+        // </svg>
+        // <h5>You will be notified once we pair you</h5>
+        // </div>
      
-        :
+        // :
         <>
-        <h3>{localStorage.getItem("eventName")}</h3>
+        <h3>{eventName}</h3>
         <form onSubmit={onNext}>
         <div className="container" >
             <h3>Let's pair you</h3>
@@ -429,8 +445,8 @@ const UserInfo = ()=>{
             }
         </div>
         <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-        <button>Looks Good</button>
-        <button onClick={onChangeRole}>Change Role</button>
+        <button className={isDisabled && "inactive"} disabled={isDisabled}>Looks Good</button>
+        <button className={isDisabled && "inactive"} onClick={onChangeRole} disabled={isDisabled}>Change Role</button>
         </div>
         </form>  
         </>   

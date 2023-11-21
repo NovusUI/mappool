@@ -1,19 +1,15 @@
 import React, { useState } from 'react'
+import PassengerQuickAction from './PassengerQuickAction'
 
-const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassenger}) => {
+const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassenger,isDisabled}) => {
 
 
     const [openPassengerQA, setOpenPassengerQA] = useState(false)
   return (
     openPassengerQA &&
-    <div>
-       {
-        passengers.map(passenger=><div>
-            <p>{passenger.username}</p>
-            <button onClick={()=>rejectPassenger(passenger.id)}>remove</button>
-        </div>)
-       }
-    </div>
+    <PassengerQuickAction passengers={passengers} rejectPassenger={rejectPassenger} setOpenPassengerQA={setOpenPassengerQA}/>
+       
+   
     ||
     <div>
         <div className='quick-action'>
@@ -26,8 +22,8 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
         } 
 
      
-     <button>Join chat</button>
-     <button className='danger-btn' onClick={cancelPool}>Cancel Pool</button>
+     <button className={isDisabled && "inactive"} disabled={isDisabled}>Join chat</button>
+     <button className={isDisabled && "inactive" || 'danger-btn'} onClick={cancelPool} disabled={isDisabled}>Cancel Pool</button>
     </div>
     </div>
   )

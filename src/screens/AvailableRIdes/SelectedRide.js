@@ -2,13 +2,15 @@ import {  collection, doc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useAuth } from "../../contextAPI/AuthContext"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 
 
 
-const SelectedRide = ({selectedRide,setSelectedRide}) => {
+const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) => {
 
     const {user} =useAuth()
+    const [isDisabled, setIsDisabled] = useState(false)
 
    const navigate = useNavigate()
 
@@ -20,7 +22,7 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
     
      if(selectedRide.status === "created"){
 
-
+        setIsDisabled(true)
            // update request status to open
 
 
@@ -30,7 +32,7 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
             const userDoc = doc(usersCollection,user.id)
 
             const userEvents = collection(userDoc,"userevents")
-            const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
+            const userEventDoc = doc(userEvents,eventId)
             
             console.log(selectedRide.poolType)
             if(selectedRide.poolType === "pool"){
@@ -57,15 +59,16 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
             console.log(hailerData)
 
             await setDoc(newHailerDocRef, hailerData,{ merge: true })
-             navigate("/")
+            
 
         } catch (error) {
             console.log(error)
+            setIsDisabled(false)
         }
 
         
-        
-     
+        setSwitchScreen(true)
+       setIsDisabled(false)
        
      }
 
@@ -79,8 +82,8 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
  
         <>
         <button 
-            className={selectedRide.status !== "created" && "inactive"}   
-            disabled={selectedRide.status !== "created" && "true"}
+            className={(selectedRide.status !== "created" || isDisabled) && "inactive" || "group-btn"}   
+            disabled={(selectedRide.status !== "created" || isDisabled)}
             onClick={()=>{secureRide()}}
         >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -90,7 +93,13 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
             { selectedRide.status === "cancelled" &&"Ride cancelled"}
             { selectedRide.status === "closed" &&"Ride closed"}
         </button>
-        <button  onClick={()=>setSelectedRide(null)}>Cancel</button>
+        <button 
+            className={(isDisabled) && "inactive"}   
+            disabled={(isDisabled) && "true"}
+            onClick={()=>setSelectedRide(null)}
+         >
+            Cancel
+        </button>
         </>
     </div>
   )
