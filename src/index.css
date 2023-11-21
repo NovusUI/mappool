@@ -60,9 +60,6 @@ body, h1, h2, h3, p, ul, ol, li {
     background-color: #4DE55C;
   }
 
-  .ride-offers button:first-child{
-    background-color:#FF3A3A;
-  }
 
   input{
     width: 90%;
@@ -126,3 +123,21 @@ body, h1, h2, h3, p, ul, ol, li {
 
   }
 
+  .leave-a-msg{
+    width: 90%;
+    height: 8vh;
+    border-radius: 15px;
+    text-align: center;
+  }
+
+  .quick-action{
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: -170px;
+  }
+
+  .quick-action button{
+    width: 30%;
+    height: 5vh;
+  }

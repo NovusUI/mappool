@@ -21,7 +21,7 @@ const Nav = ()=>{
 
     const {isLoggedIn, setUser, user, setIsLoggedIn, setToken, setUpdateRole, updateRole} = useAuth()
     const [loading, setLoading] = useState(true)
-   
+    console.log(localStorage.getItem("updateRole"))
  
 
     useEffect(() => {
@@ -45,6 +45,7 @@ const Nav = ()=>{
                 setLoading(false)
                 setUser(userData)
                 setIsLoggedIn(true)
+                
                 setUpdateRole(localStorage.getItem("updateRole"))
               } else {
                 setLoading(false)

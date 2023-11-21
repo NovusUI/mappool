@@ -1,6 +1,7 @@
 import {  collection, doc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useAuth } from "../../contextAPI/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -9,11 +10,14 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
 
     const {user} =useAuth()
 
+   const navigate = useNavigate()
+
   const secureRide = async()=>{
 
      // if status is created change request status to open,  chnage userevent poolId or carpoolId depending
      //on the poolType
      //if status is open, chnage userevent poolId or carpoolId depending on the poolType
+    
      if(selectedRide.status === "created"){
 
 
@@ -27,10 +31,11 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
 
             const userEvents = collection(userDoc,"userevents")
             const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
-
+            
+            console.log(selectedRide.poolType)
             if(selectedRide.poolType === "pool"){
                 await updateDoc(userEventDoc,{poolId:selectedRide.id})
-            }else if(selectedRide.poolType === "carpool"){
+            }else if(selectedRide.poolType === "carpoolOffer"){
                 await updateDoc(userEventDoc,{carpoolId:selectedRide.id})
             }
 
@@ -51,7 +56,8 @@ const SelectedRide = ({selectedRide,setSelectedRide}) => {
 
             console.log(hailerData)
 
-            await setDoc(newHailerDocRef, hailerData)
+            await setDoc(newHailerDocRef, hailerData,{ merge: true })
+             navigate("/")
 
         } catch (error) {
             console.log(error)

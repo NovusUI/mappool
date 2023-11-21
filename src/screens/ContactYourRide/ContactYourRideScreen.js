@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
 import SwipeableContactYourRide from "./SwipeableContactYourRide"
 import ContactAsPooler from "./ContactAsPooler"
+import ContactAsPoolee from "./ContactAsPoolee"
 import { collection, doc, getDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import AvailableRides from "../AvailableRIdes/AvailableRides"
@@ -18,6 +19,7 @@ const ContactYourRide = ()=>{
     const[requesting, setRequesting] = useState(false)
     const [poolId,setPoolId] = useState(null)
     const [carpoolId, setCarpoolId] = useState(null)
+    const [yourPoolId, setYourPoolId] = useState(null)
      
 
 
@@ -34,10 +36,12 @@ const ContactYourRide = ()=>{
             const userEvents = collection(userDoc,"userevents")
             const userEventDoc = doc(userEvents,localStorage.getItem("eventId"))
             const userEventDocSnapshot = await getDoc(userEventDoc)
-            const {role,poolId,carpoolId}= userEventDocSnapshot.data()
+            const {role,poolId,carpoolId,yourPoolId}= userEventDocSnapshot.data()
             setUpdateRole(role)
             setPoolId(poolId)
             setCarpoolId(carpoolId)
+    
+            setYourPoolId(yourPoolId)
       
         }
         
@@ -46,19 +50,19 @@ const ContactYourRide = ()=>{
     },[location])
 
     
-    const poolExists =  ((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending"))
+    const poolExists =  ((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending") )
 
     return(
 
         updateRole =="poolee" || (!updateRole && user.role == "poolee") ?
         <>
           {
-            poolExists ? <SwipeableContactYourRide/> :<AvailableRides/>
+            poolExists ? <ContactAsPoolee/> :<AvailableRides/>
           
           }
         </>
         :
-        <ContactAsPooler/>
+        yourPoolId && <ContactAsPooler yourPoolId={yourPoolId}/>
 
     
     )

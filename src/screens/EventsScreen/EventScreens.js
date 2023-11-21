@@ -7,9 +7,10 @@ import { useApp } from '../../contextAPI/AppContext';
 
  const EventScreen =  () => {
     
-    const nagivate = useNavigate()
+    const navigate = useNavigate()
     const [events, setEvents] = useState([])
     const  {user} = useAuth()
+    
     const  {setUserSelectedEvent} =useApp()
 
     useEffect(() => {
@@ -47,14 +48,14 @@ import { useApp } from '../../contextAPI/AppContext';
     const userEvents = collection(userDoc,"userevents")
     const userEventDoc = doc(userEvents,event.id)
     const userEventDocSnapshot = await getDoc(userEventDoc)
-    
+
     setUserSelectedEvent(userEventDocSnapshot)
-    
+     console.log(userEventDocSnapshot.data())
     if(!userEventDocSnapshot.exists()){
-        nagivate("/role")
+        navigate("/role")
     }else{
         //save role to local host if role exists
-        nagivate("/")
+        navigate("/")
     }
   }
 

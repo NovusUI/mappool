@@ -274,10 +274,10 @@ const UserInfo = ()=>{
             
             if(!userEventDocSnapshot.exists()){
             // create or update new userEvent
-                await setDoc(userEventDoc,{yourPoolId:"pending", eventName: eventDetails.eventName,role: updateRole},{ merge: true })                        
+                await setDoc(userEventDoc,{yourPoolId:poolDoc.id, eventName: eventDetails.eventName,role: updateRole},{ merge: true })                        
             }
             else{
-                await setDoc(userEventDoc,{yourPoolId:"pending", role: updateRole},{ merge: true }) 
+                await setDoc(userEventDoc,{yourPoolId:poolDoc.id, role: updateRole},{ merge: true }) 
             }
             await setDoc(poolDoc,poolInfo)
             navigate("/",{state: {requesting:true}}) 

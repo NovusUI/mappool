@@ -4,11 +4,12 @@ import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import SelectedRide from './SelectedRide';
+import SwipeCard from '../../components/SwipeCard';
 
 const AvailableRides = () => {
 
   const [eventRideOffers, setEventRideOffers] = useState([])
-  const {user} = useAuth()
+  const {user,updateRole} = useAuth()
   const [rejectedRides, setRejectedRides] = useState([])
   const [selectedRide, setSelectedRide] = useState(null)
   
@@ -16,15 +17,17 @@ const AvailableRides = () => {
   //get available rides for event
   useEffect(() => {
     const eventId  = localStorage.getItem("eventId") ;
-   
+    
+    
 
    
     const unsubscribe = onSnapshot(
     query(
       collection(db, 'pool'),
       where('eventId', '==', eventId),
-      where('requesterId', '!=', user.id),
-      where('poolType', 'in', ['carpoolOffer', 'pool'])
+      where('poolAdmin', '!=', user.id),
+      where('poolType', 'in', ['carpoolOffer', 'pool']),
+      where('status',"in",["created","open"])
     ),
     (snapshot) => {
 
@@ -38,7 +41,7 @@ const AvailableRides = () => {
                                 }
                             });
 
-
+     console.log(requestsData)
       setEventRideOffers(requestsData);
     },
     (error) => {
@@ -72,13 +75,7 @@ const AvailableRides = () => {
                 eventRideOffers.map(offer=>{
                 return(
                     <>
-                   
-                        <div className='ride-offers' id={offer.id}>
-                            <button onClick={()=>rejectRide(offer.id)} >x</button>
-                                {offer.poolerLoc}
-                            <button onClick={()=> selectRide(offer)}>✔</button>
-                        </div>
-                    
+                      <SwipeCard cardInfo={offer} reject={rejectRide} accept={selectRide}/>
                     </>
                 )
                 })
