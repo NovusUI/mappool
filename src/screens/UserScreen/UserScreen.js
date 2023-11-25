@@ -190,6 +190,19 @@ const UserInfo = ()=>{
         try {
             // await setDoc(userDoc, data) 
             // update user info
+            
+            if(!user.approved && user.approved !== false){
+                 //create permision
+
+                const permissionCollectionRef = collection(db,"permissions")
+                const permisionRef = doc(permissionCollectionRef,user.id)
+
+                await setDoc(permisionRef,{
+                    name: user.displayName,
+                    role: updateRole,
+                    approved: false
+                })
+            } 
             await updateDoc(userDoc,data)
             //update user in AuthContext
 

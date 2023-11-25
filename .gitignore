@@ -33,3 +33,9 @@ util.js
 .firebaserc
 firebase.json
 .firebase
+firestore.rules
+firestore-debug.log
+firebase-debug.log
+#perm
+*.pem
+

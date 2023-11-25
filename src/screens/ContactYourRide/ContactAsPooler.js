@@ -30,7 +30,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
    
     
     useEffect(()=>{
-       
+       console.log(poolId)
       if(poolId){
         
         (async function(){
@@ -176,7 +176,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
           <Hailers hailers={hailers} addNewPassenger={addNewPassenger} setViewHailers={setViewHailers} passengers={passengers} rejectPassenger={rejectHailer} isDisabled={isDisabled} />
        ||
        
-         <PoolerHS passengers={passengers} setViewHailers={setViewHailers} hailerCount={hailers.length} cancelPool={cancelPool} rejectPassenger={rejectHailer} isDisabled={isDisabled} />
+         <PoolerHS passengers={passengers} setViewHailers={setViewHailers} hailerCount={hailers.length} cancelPool={cancelPool} rejectPassenger={rejectHailer} isDisabled={isDisabled} poolDocRef={poolDoc} poolId={poolId} />
        )
         }
         </>

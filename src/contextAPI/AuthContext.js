@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [updateRole, setUpdateRole] = useState("")
- 
+  const [msgToken, setMsgToken] = useState(null)
   
   const popupLogin = async() => {
      try {
@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
              id: uid,
              email,
              displayName,
+       
                };
 
 
@@ -44,8 +45,8 @@ export const AuthProvider = ({ children }) => {
                
         console.log(userDoc)
 
-     
-        setDoc(userDoc, data)
+        
+        setDoc(userDoc, data,{merge:true})
             .then(() => {
                   
                 setIsLoggedIn(true);
@@ -58,6 +59,9 @@ export const AuthProvider = ({ children }) => {
             .catch((error) => {
                     alert(error);
             });
+        
+       
+        
         
      } catch (error) {
         console.log(error)
@@ -73,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole, setToken,token,  }}>
+    <AuthContext.Provider value={{ isLoggedIn, popupLogin, logout, user, setUser,setIsLoggedIn, updateRole,setUpdateRole, setToken,token, msgToken, setMsgToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,19 +10,31 @@ import SwipeableContactYourRide from "../screens/ContactYourRide/SwipeableContac
 import { useAuth } from '../contextAPI/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { auth, db } from '../firebase/config';
+import { auth, db, messaging } from '../firebase/config';
+
 import { onAuthStateChanged } from 'firebase/auth';
 import AdminScreen from '../screens/AdminScreen';
 import { completelyRandomPath } from '../util.js';
 import EventScreen from '../screens/EventsScreen/EventScreens';
 import ClearToken from './ClearAuthToken';
+import { getToken } from 'firebase/messaging';
+import NotPermittedScreen from '../screens/NotPermittedScreen';
 
 const Nav = ()=>{
 
-    const {isLoggedIn, setUser, user, setIsLoggedIn, setToken, setUpdateRole, updateRole} = useAuth()
+    const {isLoggedIn, setUser, user, setIsLoggedIn, setToken, setUpdateRole, updateRole,setMsgToken} = useAuth()
     const [loading, setLoading] = useState(true)
     console.log(localStorage.getItem("updateRole"))
- 
+    
+    const requestPermission = (currentToken)=> {
+      console.log('Requesting permission...');
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          setMsgToken(currentToken)
+          console.log('Notification permission granted.');
+        }
+      })
+    }
 
     useEffect(() => {
 
@@ -43,6 +55,7 @@ const Nav = ()=>{
                 // Document data is available in docSnapshot.data()
                 const userData = docSnapshot.data();
                 setLoading(false)
+                 console.log(userData)
                 setUser(userData)
                 setIsLoggedIn(true)
                 
@@ -53,6 +66,23 @@ const Nav = ()=>{
             })
             .catch((error) => {
               console.error("Error getting document:", error);
+            });
+            
+            getToken(messaging, { vapidKey: 'BI-cNvqtp_6OCpSOw-T2e2udGJjOPseTfYsY44J6UbIa52NR_cE0X-OThAMxoSiiNjxdzLmQ7MNMBhmZryyB5i8' }).then((currentToken) => {
+              if (currentToken) {
+                // Send the token to your server and update the UI if necessary
+                console.log(currentToken)
+                setMsgToken(currentToken)
+               
+                // ...
+              } else {
+                // Show permission request UI
+                requestPermission(currentToken)
+                // ...
+              }
+            }).catch((err) => {
+              console.log('An error occurred while retrieving token. ', err);
+              // ...
             });
     
           } else {
@@ -69,7 +99,7 @@ const Nav = ()=>{
 
     return (
         <Router>
-    
+        <nav id='top-bar'></nav>
         { !isLoggedIn ? 
         (
             
@@ -87,6 +117,7 @@ const Nav = ()=>{
           <Route path ={"/"} element={<ContactYourRide/>}/>
           <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
           <Route path={completelyRandomPath} element={<AdminScreen/>}/>
+          <Route path={"/admin"} element={user.role === "admin" && <AdminScreen/> || <NotPermittedScreen/>}/>
           </Routes>
           
         )}

@@ -10,6 +10,7 @@ import { AppProvider } from './contextAPI/AppContext';
 function App() {
   return (
     <div id='app'>
+      
     <AuthProvider>
       <AppProvider>
         <Nav/>

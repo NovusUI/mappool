@@ -133,8 +133,12 @@ body, h1, h2, h3, p, ul, ol, li,div {
   .quick-action{
     display: flex;
     justify-content: space-between;
-    position: relative;
-    top: -170px;
+    position: absolute;
+    top: 8vh;
+    left: 0;
+    padding:2px 20px;
+    width: 100vw;
+    
   }
 
   .quick-action button{
@@ -172,4 +176,74 @@ body, h1, h2, h3, p, ul, ol, li,div {
 
   .x-cancel-btn:hover{
     background-color: #3F4246;
+  }
+
+  #top-bar{
+    height: 8vh;
+    width: 100vw;
+    background-color: #1D1E21;
+    position: absolute;
+    top: 0;
+  }
+
+  #chat-view{
+    height: 80vh;
+    position: relative;
+    top: 5vh;
+    width: 95vw;
+    display: flex;
+    flex-direction: column;
+    background-color:  #5d5656;
+    opacity: 1;
+    border-radius: 15px;
+    padding: 0px 20px 20px;
+  }
+  #utility-bar{
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+  }
+  #utility-bar button{
+    margin: 0 10px;
+  }
+  #chat-area{
+    height: 78%;
+    overflow: scroll;
+    
+  }
+.my-chat,.your-chat{
+  padding: 10px;
+  margin:  10px 0;
+}
+.my-chat{
+  background-color: #DFD1D1;
+  border-radius: 0 10px ;
+  
+}
+.your-chat{
+  background-color: #ffffff;
+  border-radius: 10px 0 ;
+}
+  #chat-input-div{
+    height: 12%;
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 10px 0; */
+  }
+
+  #chat-input{
+    width: 85%;
+    height: 80%;
+    border-radius: 30px;
+    background-color: #5A5A5A;
+    color: #f0f0f0;
+  }
+  .round-btn{
+    width: 30px ;
+    height: 30px;
+    border-radius: 50%;
   }

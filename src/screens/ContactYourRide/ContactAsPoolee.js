@@ -6,6 +6,7 @@ import { useAuth } from "../../contextAPI/AuthContext"
 import { collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useApp } from "../../contextAPI/AppContext"
+import ChatApp from "../../components/ChatApp"
 
 const Contact = ({setSwitchScreen})=>{
 
@@ -26,6 +27,34 @@ const Contact = ({setSwitchScreen})=>{
     const [buttonMsg, setButtonMsg] = useState("Too short")
     const [poolHailerStatus, setPoolHailerStatus] = useState(null)
     const [isDisabled, setIsDisabled] = useState(false)
+
+   const [poolMsgsRef, setPoolMgsRef] = useState(null)
+    const [poolMsgs, setPoolMsgs] = useState([])
+    const [openChat, setOpenChat] = useState(false)
+
+    useEffect(()=>{
+      
+      if(poolRef){
+      const poolMsgsRef = collection(poolRef,"poolMessages")
+      setPoolMgsRef(poolMsgsRef)
+      const poolMsgsUnsubscribe = onSnapshot(poolMsgsRef,(snapshot)=>{
+      
+      
+       setPoolMsgs([])
+       const sortedMgs =snapshot.docs.map(doc=>({
+          id:doc.id,
+          ...doc.data()
+       })).sort((a,b)=>(a.time - b.time))
+
+       setPoolMsgs(sortedMgs)
+      
+     })
+      
+     return()=> poolMsgsUnsubscribe()
+    }
+      
+    },[poolRef])
+
     const navigate = useNavigate()
     
     const [isWaiting, setIsWaiting] = useState(true)
@@ -176,7 +205,7 @@ const Contact = ({setSwitchScreen})=>{
      if(leaveAMsg){
         setShowTextArea(true)
      }else{
-       console.log("joining...")
+      setOpenChat(true)
      }
      
   };
@@ -276,7 +305,7 @@ const Contact = ({setSwitchScreen})=>{
       isWaiting && <div>Waiting...</div> ||
        
      <>
-     
+     { !openChat &&
       <div className="container">
       <h3>Contact your {type === 'carpool' ? 'ride' : 'pool group'}</h3>
    
@@ -321,6 +350,10 @@ const Contact = ({setSwitchScreen})=>{
        }
 
       </div>
+      }
+      {
+        openChat && <ChatApp poolMsgs={poolMsgs} poolMsgsRef={poolMsgsRef} setOpenChat={setOpenChat} poolId={poolId}/>
+      }
       </>
     )
 

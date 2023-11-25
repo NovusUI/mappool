@@ -67,6 +67,7 @@ const ContactYourRide = ()=>{
                 setUpdateRole(role)
                 setPoolId(poolId)
                 setCarpoolId(carpoolId)
+                console.log(approved)
                 setApproved(approved)
     
                 setYourPoolId(yourPoolId)
