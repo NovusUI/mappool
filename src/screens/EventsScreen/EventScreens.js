@@ -14,7 +14,7 @@ import { useApp } from '../../contextAPI/AppContext';
     const  {setUserSelectedEvent} =useApp()
 
     const eventCollection = collection(db, "events")
-    
+    const {setChosenEvent} = useApp()
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -59,9 +59,10 @@ import { useApp } from '../../contextAPI/AppContext';
         return
     }
         
-
+   
     localStorage.setItem("eventName",event.eventName)
     localStorage.setItem("eventId",event.id)
+    //setChosenEvent(eventDoc)
 
     const usersCollection = collection(db, "users")
     const userDoc = doc(usersCollection,user.id)

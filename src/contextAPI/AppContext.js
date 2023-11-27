@@ -8,11 +8,12 @@ export const AppProvider = ({ children }) => {
   const [userSelectedEvent, setUserSelectedEvent] = useState(null)
   const [updateRole, setUpdateRole] = useState(null)
   const [isWaiting, setIsWaiting] = useState(true)
+  const [chosenEvent, setChosenEvent] = useState(null)
 
  
 
   return (
-    <AppContext.Provider value={{userSelectedEvent, setUserSelectedEvent , updateRole, setUpdateRole,isWaiting,setIsWaiting}}>
+    <AppContext.Provider value={{userSelectedEvent, setUserSelectedEvent , updateRole, setUpdateRole,isWaiting,setIsWaiting,chosenEvent, setChosenEvent}}>
       {children}
     </AppContext.Provider>
   );

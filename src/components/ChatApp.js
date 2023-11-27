@@ -82,11 +82,12 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         try {
             await setDoc(chatMsgRef,msg)
 
-            
+            setChatValue("")
         } catch (error) {
             console.log(error)
+            setChatValue("")
         }
-
+   
     }
 
     const filterByInfo = ()=>{
@@ -96,7 +97,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     }
 
     const filterByMsgToYou= ()=>{
-       console.log(poolMsgs[11].to.includes(user.id))
+      
         const filteredMsg = poolMsgs.filter(msg=>msg.to?.includes(user.id))
         console.log(filteredMsg)
         setFilteredMsg(filteredMsg)

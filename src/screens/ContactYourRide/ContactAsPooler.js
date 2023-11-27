@@ -20,6 +20,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
     const [rejectedPassengers, setRejectedPassengers] = useState([])
     const [viewHailers, setViewHailers] = useState(true)
     const [poolStatus, setPoolStatus] = useState(null)
+    const [poolData, setPoolData] = useState(null)
     const [isDisabled, setIsDisabled] = useState(false)
     const poolCollection = collection(db,"pool")
     const poolDoc = doc(poolCollection,poolId)
@@ -42,9 +43,20 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
               navigate("/events")
               return
             }
+
+          
         
             setPoolStatus(poolData.data().status)
-            console.log(poolData.data().status)
+            setPoolData(poolData.data())
+           
+            // getsnapshot of pool
+
+            const unsubscribePoolDocSnapShot = onSnapshot(poolDoc,(snapshot)=>{
+                if(snapshot.exists()){
+                  setPoolData(snapshot.data())
+                }
+            })
+
           
       
             const poolHailerData = await getDocs(poolHailersSubcollection)
@@ -54,10 +66,12 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
             if(passengers.length > 0){
               setViewHailers(false)
             }
+            setIsWaiting(false)
+            return()=> unsubscribePoolDocSnapShot()
           } catch (error) {
             console.log(error)
           }
-          setIsWaiting(false)
+          
           
         })()
        
@@ -176,7 +190,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
           <Hailers hailers={hailers} addNewPassenger={addNewPassenger} setViewHailers={setViewHailers} passengers={passengers} rejectPassenger={rejectHailer} isDisabled={isDisabled} />
        ||
        
-         <PoolerHS passengers={passengers} setViewHailers={setViewHailers} hailerCount={hailers.length} cancelPool={cancelPool} rejectPassenger={rejectHailer} isDisabled={isDisabled} poolDocRef={poolDoc} poolId={poolId} />
+         <PoolerHS passengers={passengers} setViewHailers={setViewHailers} hailerCount={hailers.length} cancelPool={cancelPool} rejectPassenger={rejectHailer} isDisabled={isDisabled} poolDocRef={poolDoc} poolId={poolId} setIsDisabled={setIsDisabled} poolData={poolData}/>
        )
         }
         </>

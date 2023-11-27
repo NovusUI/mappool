@@ -1,9 +1,9 @@
 
 import { useLocation, useNavigate } from "react-router-dom"
 import "../../index.css"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
-import { collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useApp } from "../../contextAPI/AppContext"
 import ChatApp from "../../components/ChatApp"
@@ -18,19 +18,64 @@ const Contact = ({setSwitchScreen})=>{
     const [type, setType] = useState(null)
     const [validate, setValidate] = useState(false)
     const [validateMessage, setValidateMessage] = useState("")
-    const [poolStatus, setPoolStatus] = useState(null)
+    const [pool, setPool] = useState(null)
     const [eventDocRef, seteventDocRef] = useState(null)
     const [confirmedReject, setConfirmedReject] = useState(true)
     const [leaveAMsg,setLeaveAMsg] = useState(false)
     const [showTextArea, setShowTextArea] = useState(false)
     const [textareaValue, setTextareaValue] = useState('');
     const [buttonMsg, setButtonMsg] = useState("Too short")
-    const [poolHailerStatus, setPoolHailerStatus] = useState(null)
+    const [poolHailerRef, setPoolHailerRef] = useState(null)
+    const [poolHailer, setPoolHailer] = useState(null)
     const [isDisabled, setIsDisabled] = useState(false)
-
-   const [poolMsgsRef, setPoolMgsRef] = useState(null)
+    const [eventData, setEventData] = useState(null)
+    const [poolMsgsRef, setPoolMgsRef] = useState(null)
     const [poolMsgs, setPoolMsgs] = useState([])
     const [openChat, setOpenChat] = useState(false)
+    const [firstSurvey,setFirstSurvey] = useState(false)
+    const [firstSurveyAnswer, setFirstSurveyAnswer] = useState(null)
+    const [firstSurveyMessage, setFirstSurveyMessage] = useState(null)
+    const [secondSurvey, setSecondSurvey] = useState(false)
+    const eventId = localStorage.getItem("eventId")
+    const eventCollectionRef = collection(db,"events")
+    
+    const firstSurveyRef = useRef()
+    
+   
+ 
+   
+
+   useEffect(()=>{
+
+    if(eventDocRef && poolHailer){
+    try {
+      const eventDocRef = doc(eventCollectionRef,eventId)
+    const unsubscribeEventSnapShop = onSnapshot(eventDocRef,(snapshot)=>{
+        if(snapshot.exists()){
+          const eventData = {
+            eventId,
+            ...snapshot.data()
+          }
+          setEventData(eventData)
+   
+          if((eventData.eventDate.seconds - (Math.floor(Date.now() / 1000))) <= 1200 && !poolHailer.startOfEventSurvey ){
+          
+            
+            setFirstSurvey(true)
+            setIsDisabled(true)
+          }else{
+            setFirstSurvey(false)
+          }
+        }
+    })
+
+    return()=> unsubscribeEventSnapShop()
+    } catch (error) {
+      console.log(error)
+    }
+   }
+   },[eventDocRef,poolHailer])
+
 
     useEffect(()=>{
       
@@ -58,14 +103,13 @@ const Contact = ({setSwitchScreen})=>{
     const navigate = useNavigate()
     
     const [isWaiting, setIsWaiting] = useState(true)
-    const eventId = localStorage.getItem("eventId")
+    
     
     
     useEffect(()=>{
-      console.log(poolStatus)
-        if(poolStatus)
+        if(pool && pool.status)
           setIsWaiting(false)
-    },[poolStatus])
+    },[pool])
    
     useEffect(()=>{
 
@@ -117,8 +161,8 @@ const Contact = ({setSwitchScreen})=>{
    useEffect(()=>{
        //listen to update in pool collection
    
-      if(poolId){ 
-        console.log(poolId)
+      if(poolId && poolHailer){ 
+  
         const poolCollection = collection(db,"pool")
         const poolDoc = doc(poolCollection,poolId)
      
@@ -127,20 +171,29 @@ const Contact = ({setSwitchScreen})=>{
          if(docSnapshot.exists()){
         
            const data  = docSnapshot.data()
-           const poolStatus = data.status
           
-            
-           setPoolStatus(poolStatus)
-           if((poolStatus === "created" || poolStatus === "closed") && poolHailerStatus === "accepted" ){
+          
+           setPool(data)
+           
+           if(data.returnTripSurvey && !poolHailer.endOfEventSurvey){
+              setSecondSurvey(true)
+              setIsDisabled(true)
+           }else{
+            setSecondSurvey(false)
+           
+         
+           }
+          //  setPoolStatus(poolStatus)
+           if((data.status === "created" || data.status === "closed") && poolHailer.poolHailerStatus === "accepted" ){
               setValidate(true)
               setLeaveAMsg(false)
            }
-           else if(poolHailerStatus === "rejected"){
+           else if(poolHailer.poolHailerStatus === "rejected"){
             setValidate(false)
             setLeaveAMsg(false)
             setValidateMessage("Pooler rejected your offer! Maybe not a macth")
            }
-           else if(poolStatus == "created"){
+           else if(data.status == "created"){
             setValidate(true)
             setLeaveAMsg(true)
            }
@@ -167,7 +220,7 @@ const Contact = ({setSwitchScreen})=>{
       
       
    
-   },[poolId,poolHailerStatus])
+   },[poolId,poolHailer])
 
 
    useEffect(()=>{
@@ -178,18 +231,16 @@ const Contact = ({setSwitchScreen})=>{
       const poolDoc = doc(poolCollection,poolId)
       const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
       const poolHailerDoc = doc(poolHailersSubcollection, user.id)
+     
+      setPoolHailerRef(poolHailerDoc)
         const unsubscribeHaillers = onSnapshot(poolHailerDoc,(snapshot)=>{
           
            if(snapshot.exists()){
             
             const data  = snapshot.data()
-            console.log(data)
-            const status = data.poolHailerStatus 
-            if(status){
-              console.log(status)
-              setPoolHailerStatus(status)
-              
-            }
+            
+            setPoolHailer(data)
+          
            }
         })
 
@@ -220,17 +271,30 @@ const Contact = ({setSwitchScreen})=>{
      const poolHailerDocREf = doc(poolHailersSubcollection,user.id)
      
      try {
-      await deleteDoc(poolHailerDocREf)
+      await updateDoc(poolHailerDocREf,{
+        status: "rejected"
+      })
 
      if(type){
         if(validate){
             if(confirmedReject){
           
                 await updateDoc(eventDocRef,poolStatus)
-            
+                console.log("here")
+                const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
+                console.log(poolId)
+
+                const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
+                console.log("here")
+                await setDoc(eventRejectedRideDocRef,{id:poolId, reason:"unknown"})
+                console.log("here")
+                
             }
         }else{
             await updateDoc(eventDocRef,poolStatus)
+            const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
+            const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
+            await setDoc(eventRejectedRideDocRef,{id:poolId, reason: "ride not available"})
   
        }
        
@@ -241,6 +305,7 @@ const Contact = ({setSwitchScreen})=>{
      } catch (error) {
        console.error(error)
       setIsDisabled(false)
+    
      }
      
      
@@ -287,15 +352,105 @@ const Contact = ({setSwitchScreen})=>{
       } catch (error) {
         console.error(error)
         setIsDisabled(false)
+        console.log("is did ff")
       }
       
       setIsDisabled(false)
+      console.log("is did gh")
        
        setShowTextArea(false)
     }
      
    
 
+  }
+
+  const endOfEventSurvey = async(status)=>{
+     if(status){
+        await updateDoc(poolHailerRef,{
+          endOfEventSurvey: {
+            status: true,
+            option: "yes"
+          }
+      })
+      setSecondSurvey(false)
+      setIsDisabled(false)
+      console.log("is did tt")
+     }else{
+      await updateDoc(poolHailerRef,{
+        endOfEventSurvey: {
+          status: true,
+          option: "no"
+        }
+      })
+      setSecondSurvey(false)
+      cancelRide()
+     }
+  }
+
+  const startOfEventSurvey = async(type)=>{
+      console.log(isDisabled)
+    switch(type){
+      case 1:{
+        setFirstSurveyAnswer({
+          answerType: "yes, but i went alone"
+        })
+        setFirstSurveyMessage("Any comments?")
+
+      }
+      break;
+      case 2:{
+        setFirstSurveyAnswer({
+          answerType: "yes, followed ride"
+        })
+        setFirstSurveyMessage("Any comments?")
+      }
+      break;
+      case 3:{
+        setFirstSurveyAnswer({
+          answerType: "waiting for ride"
+        })
+        setFirstSurveyMessage("Any comments?")
+      }
+      break;
+      case 4:{
+        setFirstSurveyAnswer({
+          answerType: "on my way with ride"
+        })
+        setFirstSurveyMessage("Any comments?")
+      }
+      break;
+      case 5:{
+        setFirstSurveyAnswer({
+          answerType: "on my way"
+        })
+        setFirstSurveyMessage("Any comments?")
+      }
+      break;
+      case 6:{
+        setFirstSurveyAnswer({
+          answerType: "not going"
+        })
+        setFirstSurveyMessage("Any comments?")
+      }
+      break;
+    }
+  }
+
+  const submitFirstSurvey = async()=>{
+    try {
+      await updateDoc(poolHailerRef,{
+       startOfEventSurvey: {
+           ...firstSurveyAnswer,
+           comment: firstSurveyRef.current.value
+        }
+      })
+      setFirstSurveyMessage(null)
+      setFirstSurvey(null)
+      setIsDisabled(false)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
 
@@ -317,7 +472,7 @@ const Contact = ({setSwitchScreen})=>{
          </>
          ||
          <>
-         <button className={ isDisabled || (validate) ? "group-btn":"inactive"} onClick={joinCarpoolGroup} disabled={!validate || isDisabled } >
+         <button className={ !validate || isDisabled ? "inactive":"group-btn"} onClick={joinCarpoolGroup} disabled={!validate || isDisabled } >
            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.184299 19.3314C0.102479 19.6284 0.372969 19.9025 0.671019 19.8247L5.27836 18.6213C6.73272 19.409 8.37012 19.8275 10.0372 19.8275H10.0422C15.5282 19.8275 20.0001 15.3815 20.0001 9.9163C20.0001 7.26735 18.9661 4.77594 17.0864 2.90491C15.2066 1.03397 12.7085 0 10.0421 0C4.55619 0 0.0842292 4.44605 0.0842292 9.9114C0.0835992 11.65 0.542519 13.3582 1.41491 14.8645L0.184299 19.3314ZM2.86104 15.2629C2.96786 14.8752 2.91449 14.4608 2.71293 14.1127C1.97278 12.8348 1.5837 11.3855 1.58423 9.9114C1.58423 5.28158 5.3775 1.5 10.0421 1.5C12.312 1.5 14.4297 2.37698 16.0282 3.96805C17.6249 5.55737 18.5001 7.66611 18.5001 9.9163C18.5001 14.5459 14.7069 18.3275 10.0422 18.3275H10.0372C8.62072 18.3275 7.22875 17.9718 5.99278 17.3023C5.65826 17.1211 5.26738 17.0738 4.89928 17.17L2.13688 17.8915L2.86104 15.2629Z" fill="white"/>
            </svg>
@@ -354,6 +509,39 @@ const Contact = ({setSwitchScreen})=>{
       {
         openChat && <ChatApp poolMsgs={poolMsgs} poolMsgsRef={poolMsgsRef} setOpenChat={setOpenChat} poolId={poolId}/>
       }
+      {
+        secondSurvey && 
+        <div className='survey'>
+           <h3>This ride is open for return
+             journey, will you like to join in?</h3>
+          <div onClick={()=>endOfEventSurvey(true)}>Yes, i'm in</div>
+          <div onClick={()=>endOfEventSurvey(false)}>No, cancel ride</div>
+
+        </div>
+      }
+      {
+        firstSurvey &&
+        (
+          !firstSurveyMessage &&
+        <div className='survey'>
+          <h3>Are you at the event?</h3>
+          <div onClick={()=>startOfEventSurvey(1)}>Yes, but did not follow ride</div>
+          <div onClick={()=>startOfEventSurvey(2)}>Yes, I followed ride</div>
+          <div onClick={()=>startOfEventSurvey(3)}>waiting for ride</div>
+          <div onClick={()=>startOfEventSurvey(4)}>on my way with ride</div>
+          <div onClick={()=>startOfEventSurvey(5)}>on my way</div>
+          <div onClick={()=>startOfEventSurvey(6)}>not going</div>
+        </div>
+         ||
+         <div className="survey">
+            <button className="x-cancel-btn" onClick={()=>setFirstSurveyMessage(null)}>X</button>
+            <h3>{firstSurveyMessage}</h3>
+            <input placeholder="submit blank if no comment" ref={firstSurveyRef}></input>
+            <button onClick={submitFirstSurvey}>Submit</button>
+         </div>
+        )
+      }
+      
       </>
     )
 
