@@ -11,6 +11,7 @@ const AvailableRides = ({setSwitchScreen}) => {
   const [eventRideOffers, setEventRideOffers] = useState([])
   const {user,updateRole} = useAuth()
   const [rejectedRides, setRejectedRides] = useState([])
+  const [ gottenRejectedRides, setGottenRejectedRides] = useState(false)
   const [selectedRide, setSelectedRide] = useState(null)
   const eventId  = localStorage.getItem("eventId") ;
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ const AvailableRides = ({setSwitchScreen}) => {
    const userEventCollectionRef = collection(userRef,"userevents")
    const userEventRef = doc(userEventCollectionRef,eventId)
    const rejectedRideCollectionRef = collection(userEventRef,"rejectedRides")
-
+    
   //get available rides for event
 
 
@@ -33,20 +34,25 @@ const AvailableRides = ({setSwitchScreen}) => {
       const rejectedRidesIds = rejectedRidesDocs.docs.map(doc=>doc.id)
      
       setRejectedRides(rejectedRidesIds)
+      setGottenRejectedRides(true)
+      
     } catch (error) {
       console.log(error)
     }
     
   }
-
+  getRejectedRides()
+  
   useEffect(() => {
+     
    
     
     if(!eventId){
         navigate("/events")
     }
-    getRejectedRides()
- 
+    // if(gottenRejectedRides){
+    
+    console.log(true)
       const unsubscribe = onSnapshot(
         query(
           collection(db, 'pool'),
@@ -80,7 +86,8 @@ const AvailableRides = ({setSwitchScreen}) => {
   
     
   return () => unsubscribe();
-}, [user.Id,rejectedRides]);
+      // }
+}, [gottenRejectedRides]);
 
 
  const rejectRide = async(rideId)=>{
@@ -98,6 +105,10 @@ const AvailableRides = ({setSwitchScreen}) => {
    }
  }
 
+ const undecided = async(rideId)=> {
+
+ }
+
  const selectRide = (ride)=>{
     setSelectedRide(ride)
     
@@ -109,9 +120,9 @@ const AvailableRides = ({setSwitchScreen}) => {
         :
         <>
           <h2>Swipe</h2>
-                    <>
+                    <div style={{color:"green", position:"relative", height:"40vh", width:"80vw"}}>
                       { eventRideOffers.length > 0 &&<SwipeCard cardInfo={eventRideOffers[0]} reject={rejectRide} accept={selectRide}/>}
-                    </>
+                    </div>
 
              <button  className='danger-btn' onClick={()=>navigate("/events")}>Cancel request</button>
         </>

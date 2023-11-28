@@ -19,6 +19,7 @@ import EventScreen from '../screens/EventsScreen/EventScreens';
 import ClearToken from './ClearAuthToken';
 import { getToken } from 'firebase/messaging';
 import NotPermittedScreen from '../screens/NotPermittedScreen';
+import NavBar from './NavBar';
 
 const Nav = ()=>{
 
@@ -99,7 +100,7 @@ const Nav = ()=>{
 
     return (
         <Router>
-        <nav id='top-bar'></nav>
+         <NavBar/>
         { !isLoggedIn ? 
         (
             

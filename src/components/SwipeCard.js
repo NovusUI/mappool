@@ -1,12 +1,31 @@
 import React from 'react'
+import TinderCard from 'react-tinder-card'
 
 const SwipeCard = ({cardInfo, reject, accept, undecided,type}) => {
 
     const {id, poolerLoc,location,eventLocation, adminName,time,convPULoc,username,shortMsg} = cardInfo
 
-    console.log(cardInfo)
-  return (
+    const onSwipe = (direction) => {
+      console.log('You swiped: ' + direction)
+      if(direction == "left"){
+        
+        console.log("rejected",id)
+        reject(id)
+      }else if(direction === "right"){
+        console.log("accepted")
+        accept(cardInfo)
+      }else if(direction === "down"){
+        console.log("soso");
+        
+      }
+    }
     
+    const onCardLeftScreen = (myIdentifier) => {
+      console.log(myIdentifier + ' left the screen')
+    }
+   
+  return (
+    <TinderCard  onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={["up"]} >
     <div className='swipe-card' id={id}>
       <div className='profile-image'></div>
       <div style={{paddingBottom:"15px"}}>
@@ -39,10 +58,11 @@ const SwipeCard = ({cardInfo, reject, accept, undecided,type}) => {
         }
       <div className='swipe-card-button-container'>
         <button className='danger-btn' onClick={()=>reject(id)}>x</button> 
-        <button className='danger-btn'>emoji</button>
+        <button>🤷‍♂️</button>
         <button onClick={()=> accept(cardInfo)}>✔</button>
       </div>
     </div>
+    </TinderCard>
   )
 }
 

@@ -1,5 +1,5 @@
 /* Reset some default browser styles */
-body, h1, h2, h3,h4, p, ul, ol, li,div{
+body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -173,7 +173,48 @@ body, h1, h2, h3,h4, p, ul, ol, li,div{
     background-color: #1D1E21;
     position: absolute;
     top: 0;
+     display: flex; 
+    justify-content: flex-end; 
+    padding: 0 20px;
   }
+  .three-dot-menu{
+    height: inherit;
+    width: 10px;
+   
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+  }
+
+  .three-dot-menu div{
+    height: 3px;
+    width: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+  }
+
+  .menu{
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    top: 8vh;
+    right: 0;
+    background-color: #5A5A5A;
+    z-index: 2;
+  }
+  .menu div{
+    padding: 4px 10px;
+  }
+  .menu div:hover{
+    background-color: #6b6a6a;
+  }
+  .menu div:last-child{
+    color: #FF3A3A;
+  }
+
+
 
   #chat-view{
     height: 80vh;
@@ -260,13 +301,14 @@ body, h1, h2, h3,h4, p, ul, ol, li,div{
     background-color: #888e91;
   }
   .swipe-card{
-      height: 40vh;
-      width: 80vw;
-      background-color: #4A4A4A;
-      position: relative;
-     margin-bottom: 40px;
-     border-radius: 15px;
-     padding: 10px 20px;
+    height: 40vh;
+    width: 80vw;
+    background-color: #4A4A4A;
+    border-radius: 15px;
+    padding: 10px 20px;
+    position: absolute;
+    /* top: -20vh;
+    left: -35vw; */
   }
   .swipe-card-button-container{
       position: absolute;
