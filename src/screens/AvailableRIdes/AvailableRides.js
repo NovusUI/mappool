@@ -107,19 +107,14 @@ const AvailableRides = ({setSwitchScreen}) => {
       selectedRide ? 
        <SelectedRide selectedRide={selectedRide} setSelectedRide={setSelectedRide} eventId={eventId} setSwitchScreen={setSwitchScreen}/>
         :
-        <div className='container'>
-            {
-                eventRideOffers.map(offer=>{
-                return(
+        <>
+          <h2>Swipe</h2>
                     <>
-                      <SwipeCard cardInfo={offer} reject={rejectRide} accept={selectRide}/>
+                      { eventRideOffers.length > 0 &&<SwipeCard cardInfo={eventRideOffers[0]} reject={rejectRide} accept={selectRide}/>}
                     </>
-                )
-                })
-               
-            }
-             <button  onClick={()=>navigate("/events")}>Cancel request</button>
-        </div>
+
+             <button  className='danger-btn' onClick={()=>navigate("/events")}>Cancel request</button>
+        </>
   )
 }
 

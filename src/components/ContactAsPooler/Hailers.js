@@ -6,7 +6,7 @@ const Hailers = ({hailers,addNewPassenger,rejectPassenger, setViewHailers, passe
   return (
     <div>
     {
-      hailers.map(hailer=><SwipeCard cardInfo={hailer} accept={addNewPassenger} reject={rejectPassenger}/>)
+      hailers.map(hailer=><SwipeCard cardInfo={hailer} accept={addNewPassenger} reject={rejectPassenger} type="hailers"/>)
     }
 
   <button className={isDisabled && "inactive"} onClick={()=>setViewHailers(false)} disabled={isDisabled}>go to chat</button>

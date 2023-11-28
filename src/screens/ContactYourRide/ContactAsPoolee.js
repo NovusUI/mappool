@@ -272,7 +272,7 @@ const Contact = ({setSwitchScreen})=>{
      
      try {
       await updateDoc(poolHailerDocREf,{
-        status: "rejected"
+        poolHailerStatus: "rejected"
       })
 
      if(type){
@@ -333,7 +333,7 @@ const Contact = ({setSwitchScreen})=>{
     console.log(textareaValue.length > 10, textareaValue.length < 50)
     if(textareaValue.length > 10 && textareaValue.length <= 50){
       setIsDisabled(true)
-      console.log("yas")
+     
       const poolHailersSubcollection = collection(poolRef, 'poolHailers')
       const newHailerDocRef = doc(poolHailersSubcollection, user.id);
 
@@ -352,11 +352,11 @@ const Contact = ({setSwitchScreen})=>{
       } catch (error) {
         console.error(error)
         setIsDisabled(false)
-        console.log("is did ff")
+      
       }
       
       setIsDisabled(false)
-      console.log("is did gh")
+   
        
        setShowTextArea(false)
     }

@@ -1,8 +1,9 @@
 /* Reset some default browser styles */
-body, h1, h2, h3, p, ul, ol, li,div {
+body, h1, h2, h3,h4, p, ul, ol, li,div{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    color: #ffffff;
   }
   
   /* Set a base font size and font family */
@@ -34,7 +35,7 @@ body, h1, h2, h3, p, ul, ol, li,div {
   }
   
   /* Add global styles for buttons */
-  button, .ride-offers {
+  button {
     cursor: pointer;
     background-color: #78A9FA; /* Set button background color */
     color: #fff; /* Set button text color */
@@ -46,19 +47,7 @@ body, h1, h2, h3, p, ul, ol, li,div {
     transition: background-color 0.2s;
     margin: 5px 0;
   }
-  .ride-offers{
-    background-color: #fff;
-    color: #3F4246;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .ride-offers button{
-    width: 30px;
-    height: 30px;
-    background-color: #4DE55C;
-  }
+ 
 
 
   input{
@@ -269,4 +258,49 @@ body, h1, h2, h3, p, ul, ol, li,div {
   }
   .survey div:hover{
     background-color: #888e91;
+  }
+  .swipe-card{
+      height: 40vh;
+      width: 80vw;
+      background-color: #4A4A4A;
+      position: relative;
+     margin-bottom: 40px;
+     border-radius: 15px;
+     padding: 10px 20px;
+  }
+  .swipe-card-button-container{
+      position: absolute;
+      bottom: -5vw;
+      left: 0;
+      height: 10vw;
+      width: inherit;
+      display: flex;
+      justify-content: space-around;
+      padding:0 40px;
+      align-items: center;
+  
+  }
+  .swipe-card button{
+    width: 10vw;
+    height: 10vw;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 100%;
+    background-color: #f0f0f0;
+  }
+  .swipe-card button:first-child{
+    background-color: #FF3A3A;
+  }
+  .swipe-card button:last-child{
+    background-color: #47c153;
+  }
+   
+  .swipe-card button:hover{
+    opacity: 0.8;
+  }
+  .profile-image{
+    height: 50%;
+  }
+  .swipe-card {
+    font-size: small;
   }
