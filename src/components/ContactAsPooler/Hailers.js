@@ -5,6 +5,7 @@ const Hailers = ({hailers,addNewPassenger,rejectPassenger, setViewHailers, passe
 
   return (
     <>
+      <h2>Swipe</h2>
       <div style={{color:"green", position:"relative", height:"40vh", width:"80vw"}}>
     {
       hailers.map(hailer=><SwipeCard cardInfo={hailer} accept={addNewPassenger} reject={rejectPassenger} type="hailers"/>)

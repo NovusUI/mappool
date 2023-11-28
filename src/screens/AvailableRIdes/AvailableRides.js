@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {collection, where, onSnapshot, setDoc, doc, query, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { createRoutesFromChildren, useNavigate } from 'react-router-dom';
 import SelectedRide from './SelectedRide';
 import SwipeCard from '../../components/SwipeCard';
 
@@ -32,7 +32,7 @@ const AvailableRides = ({setSwitchScreen}) => {
       const rejectedRidesDocs = await getDocs(rejectedRideCollectionRef)
 
       const rejectedRidesIds = rejectedRidesDocs.docs.map(doc=>doc.id)
-     
+      console.log(rejectedRidesIds)
       setRejectedRides(rejectedRidesIds)
       setGottenRejectedRides(true)
       
@@ -41,7 +41,10 @@ const AvailableRides = ({setSwitchScreen}) => {
     }
     
   }
-  getRejectedRides()
+  useEffect(()=>{
+    getRejectedRides()
+  },[])
+  
   
   useEffect(() => {
      
@@ -50,9 +53,8 @@ const AvailableRides = ({setSwitchScreen}) => {
     if(!eventId){
         navigate("/events")
     }
-    // if(gottenRejectedRides){
-    
-    console.log(true)
+     if(gottenRejectedRides){
+ 
       const unsubscribe = onSnapshot(
         query(
           collection(db, 'pool'),
@@ -86,7 +88,7 @@ const AvailableRides = ({setSwitchScreen}) => {
   
     
   return () => unsubscribe();
-      // }
+       }
 }, [gottenRejectedRides]);
 
 
@@ -105,9 +107,7 @@ const AvailableRides = ({setSwitchScreen}) => {
    }
  }
 
- const undecided = async(rideId)=> {
 
- }
 
  const selectRide = (ride)=>{
     setSelectedRide(ride)
@@ -115,13 +115,18 @@ const AvailableRides = ({setSwitchScreen}) => {
  }
 
   return (
+       
+
       selectedRide ? 
        <SelectedRide selectedRide={selectedRide} setSelectedRide={setSelectedRide} eventId={eventId} setSwitchScreen={setSwitchScreen}/>
         :
-        <>
+         <>
           <h2>Swipe</h2>
-                    <div style={{color:"green", position:"relative", height:"40vh", width:"80vw"}}>
-                      { eventRideOffers.length > 0 &&<SwipeCard cardInfo={eventRideOffers[0]} reject={rejectRide} accept={selectRide}/>}
+          
+          <div style={{color:"green", position:"relative", height:"40vh", width:"80vw"}}>
+                      { 
+                        eventRideOffers.map((eventRideOffer)=><SwipeCard cardInfo={eventRideOffer} reject={rejectRide} accept={selectRide}/>)
+                      }
                     </div>
 
              <button  className='danger-btn' onClick={()=>navigate("/events")}>Cancel request</button>

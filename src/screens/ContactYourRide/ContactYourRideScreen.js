@@ -90,14 +90,14 @@ const ContactYourRide = ()=>{
     return(
 
         updateRole =="poolee" || (!updateRole && user.role == "poolee") ?
-        <>
-          {
+        
+          
             (isWaiting  && <div>waiting...</div>)
             ||
             (approved && ((poolExists) ? <ContactAsPoolee setSwitchScreen={setPoolExist}/> :<AvailableRides  setSwitchScreen={setPoolExist}/>) || <PermissionCard/>)
           
-          }
-        </>
+          
+      
         :
          (isWaiting && <div>waiting...</div>)
             ||

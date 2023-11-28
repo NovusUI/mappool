@@ -1,10 +1,10 @@
 import React from 'react'
 import TinderCard from 'react-tinder-card'
 
-const SwipeCard = ({cardInfo, reject, accept, undecided,type}) => {
+const SwipeCard = ({cardInfo, reject, accept,type}) => {
 
     const {id, poolerLoc,location,eventLocation, adminName,time,convPULoc,username,shortMsg} = cardInfo
-
+    // console.log(cardInfo.id)
     const onSwipe = (direction) => {
       console.log('You swiped: ' + direction)
       if(direction == "left"){
