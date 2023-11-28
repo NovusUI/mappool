@@ -3,8 +3,9 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    color: #ffffff;
+  
   }
+  
   
   /* Set a base font size and font family */
   body {
@@ -206,6 +207,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
   .menu div{
     padding: 4px 10px;
+    color: #ffffff;
   }
   .menu div:hover{
     background-color: #6b6a6a;
@@ -227,6 +229,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     opacity: 1;
     border-radius: 15px;
     padding: 0px 20px 20px;
+    
   }
   #utility-bar{
     height: 10%;
@@ -246,6 +249,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
 .my-chat,.your-chat{
   padding: 10px;
   margin:  10px 0;
+  color: #1D1E21;
 }
 .my-chat{
   background-color: #DFD1D1;
