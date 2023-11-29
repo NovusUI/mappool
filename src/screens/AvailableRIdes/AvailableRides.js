@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import {collection, where, onSnapshot, setDoc, doc, query, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
-import { createRoutesFromChildren, useNavigate } from 'react-router-dom';
+import { createRoutesFromChildren, useMatch, useNavigate } from 'react-router-dom';
 import SelectedRide from './SelectedRide';
 import SwipeCard from '../../components/SwipeCard';
+import { useMsg } from '../../contextAPI/MsgContext';
 
 const AvailableRides = ({setSwitchScreen}) => {
 
@@ -13,24 +14,32 @@ const AvailableRides = ({setSwitchScreen}) => {
   const [rejectedRides, setRejectedRides] = useState([])
   const [ gottenRejectedRides, setGottenRejectedRides] = useState(false)
   const [selectedRide, setSelectedRide] = useState(null)
+  const [rejectedRideCollectionRef, setRejectedRideCollectionRef] = useState(null)
   const eventId  = localStorage.getItem("eventId") ;
   const navigate = useNavigate()
+  const {setMsgType} = useMsg()
 
 
-   const userCollectionRef = collection(db,"users")
-   const userRef = doc(userCollectionRef,user.id)
-   const userEventCollectionRef = collection(userRef,"userevents")
-   const userEventRef = doc(userEventCollectionRef,eventId)
-   const rejectedRideCollectionRef = collection(userEventRef,"rejectedRides")
+  
+   
     
   //get available rides for event
 
 
   const getRejectedRides = async()=>{
+    if(!eventId){
+      navigate("/notfound")
+    }
   
     try {
+      const userCollectionRef = collection(db,"users")
+      const userRef = doc(userCollectionRef,user.id)
+      const userEventCollectionRef = collection(userRef,"userevents")
+      const userEventRef = doc(userEventCollectionRef,eventId)
+      const rejectedRideCollectionRef = collection(userEventRef,"rejectedRides")
+      setRejectedRideCollectionRef(rejectedRideCollectionRef)
       const rejectedRidesDocs = await getDocs(rejectedRideCollectionRef)
-
+      
       const rejectedRidesIds = rejectedRidesDocs.docs.map(doc=>doc.id)
       console.log(rejectedRidesIds)
       setRejectedRides(rejectedRidesIds)
@@ -38,6 +47,7 @@ const AvailableRides = ({setSwitchScreen}) => {
       
     } catch (error) {
       console.log(error)
+      setMsgType("failure")
     }
     
   }
@@ -51,8 +61,8 @@ const AvailableRides = ({setSwitchScreen}) => {
    
     
     if(!eventId){
-        navigate("/events")
-    }
+      navigate("/notfound")
+  }
      if(gottenRejectedRides){
  
       const unsubscribe = onSnapshot(
@@ -80,6 +90,7 @@ const AvailableRides = ({setSwitchScreen}) => {
         },
         (error) => {
           console.error('Error fetching requests:', error);
+          setMsgType("failure")
         }
       );
    
@@ -104,6 +115,7 @@ const AvailableRides = ({setSwitchScreen}) => {
     await setDoc(rejectedRideRef,{id:rejectedRideRef.id})
    } catch (error) {
      console.log(error)
+     setMsgType("failure")
    }
  }
 

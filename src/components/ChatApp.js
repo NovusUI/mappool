@@ -3,6 +3,7 @@ import { useAuth } from '../contextAPI/AuthContext'
 import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import ScrollToBotttomBtn from './ScrollToBotttomBtn'
+import { useMsg } from '../contextAPI/MsgContext'
 
 const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
 
@@ -13,6 +14,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const [admin, setAdmin] = useState(null)
     const [isInfoMsg, setIsInfoMsg] = useState(false)
     const [directedTo, setDirectedTo] = useState([])
+    const {setMsgType} = useMsg()
     const chatAreaRef = useRef()
 
     useEffect(()=>{
@@ -41,6 +43,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
                 return()=>unSubscribePoolHailer()
                 } catch (error) {
                     console.log(error) 
+                    setMsgType("failure")
                 }
                 
             // const chatInputRef = useRef()
@@ -50,8 +53,10 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     },[poolId])
 
     const {user} = useAuth()
+
     const sendMsg = async()=>{
         setChatValue("")
+        try {
         const chatMsgRef = doc(poolMsgsRef)
         const msg = {
             sender: {
@@ -81,12 +86,13 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         }
             
 
-        try {
+        
             await setDoc(chatMsgRef,msg)
 
             
         } catch (error) {
             console.log(error)
+            setMsgType("failure")
             setChatValue("")
         }
    

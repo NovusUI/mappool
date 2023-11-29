@@ -10,6 +10,7 @@ import { db } from "../../firebase/config"
 import AvailableRides from "../AvailableRIdes/AvailableRides"
 import { useApp } from "../../contextAPI/AppContext"
 import PermissionCard from "../../components/PermissionCard"
+import { useMsg } from "../../contextAPI/MsgContext"
 
 
 
@@ -23,7 +24,7 @@ const ContactYourRide = ()=>{
     const [poolExists, setPoolExist] = useState((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending"))
     const [approved,setApproved] = useState(false)
     const {isWaiting, setIsWaiting} = useApp()
-    
+    const {setMsgType} = useMsg()
     
     
 
@@ -31,6 +32,25 @@ const ContactYourRide = ()=>{
     const eventId = localStorage.getItem("eventId")
     // check if any of the context is on defined
     console.log(user.id)
+
+    useState(()=>{
+        setMsgType("normal")
+        if(!eventId){
+            navigate("/notfound")
+        }
+       
+        (async()=>{
+            const eventCollectionRef = collection(db,"events")
+            const eventDocRef = doc(eventCollectionRef,eventId)
+            const eventDoc = await getDoc(eventDocRef)
+            if(!eventDoc.exists)
+                navigate('/notfound')
+                return
+        })()
+
+        
+
+    },[])
     
     useEffect(()=>{
         if(carpoolId || poolId ||yourPoolId){
@@ -42,10 +62,6 @@ const ContactYourRide = ()=>{
 
         setIsWaiting(true)
         console.log("renderd")
-         
-        if(!eventId){
-            navigate("/events")
-        }
 
         const getUserEventSnapShot = async() => {
             const usersCollection = collection(db, "users")

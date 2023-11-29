@@ -7,6 +7,7 @@ import { collection, doc, getDoc, getDocs, onSnapshot, updateDoc } from "firebas
 import { useAuth } from "../../contextAPI/AuthContext"
 import Hailers from "../../components/ContactAsPooler/Hailers"
 import PoolerHS from "../../components/ContactAsPooler/PoolerHS"
+import { useMsg } from "../../contextAPI/MsgContext"
 
 
 const ContactAsPooler = ({yourPoolId:poolId})=>{
@@ -25,7 +26,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
     const poolCollection = collection(db,"pool")
     const poolDoc = doc(poolCollection,poolId)
     const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
-
+    const {setMsgType} = useMsg()
     const [isWaiting, setIsWaiting] = useState(true)
 
    
@@ -40,7 +41,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
             const poolData = await getDoc(poolDoc)
 
             if(!poolData.exists()){
-              navigate("/events")
+              navigate("/notfound")
               return
             }
 
@@ -55,6 +56,9 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
                 if(snapshot.exists()){
                   setPoolData(snapshot.data())
                 }
+            },(error)=>{
+              console.log(error)
+              setMsgType("failure")
             })
 
           
@@ -70,6 +74,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
             return()=> unsubscribePoolDocSnapShot()
           } catch (error) {
             console.log(error)
+            setMsgType("failure")
           }
           
           
@@ -109,6 +114,9 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
               }
               
             });
+          },(error)=>{
+            console.log(error)
+            setMsgType("failure")
           });
           return () => unsubscribeHaillers();
   
@@ -126,6 +134,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
         await updateDoc(hailerRef,{poolHailerStatus:"accepted"})
       } catch (error) {
         console.log(error)
+        setMsgType("failure")
       }
     
       
@@ -145,7 +154,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
         await updateDoc(hailerRef,{poolHailerStatus:"rejected"})
       } catch (error) {
         console.log(error)
-       
+        setMsgType("failure")
       }
    }
 
@@ -155,7 +164,8 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
       await updateDoc(poolDoc,{status:"cancelled"})
       setPoolStatus("cancelled")
     } catch (error) {
-      setIsDisabled(false)
+      console.log(error)
+      setMsgType("failure")
     }
     setIsDisabled(false)
    }
@@ -167,7 +177,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
       setPoolStatus("created")
     } catch (error) {
       console.log(error)
-      setIsDisabled(false)
+      setMsgType("failure")
     }
     setIsDisabled(false)
    }

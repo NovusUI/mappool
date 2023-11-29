@@ -5,6 +5,7 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } 
 import { db } from "../../firebase/config"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { useMsg } from "../../contextAPI/MsgContext"
 // import { randomRequests } from "../util.mjs"
 
 const UserInfo = ()=>{
@@ -26,6 +27,7 @@ const UserInfo = ()=>{
     const eventId = localStorage.getItem("eventId")
     const eventName = localStorage.getItem("eventName") 
     const eventRole = localStorage.getItem("updateRole")
+    const {setMsgType} = useMsg()
 
     const eventDetails = {
         eventId,
@@ -44,10 +46,10 @@ const UserInfo = ()=>{
     
     useEffect(() => {
 
-
+        setMsgType("normal")
 
         if(!eventId || !eventName || !eventRole){
-            navigate("/events")
+            navigate("/notfound")
         }
         
         // removed user.role
@@ -398,6 +400,7 @@ const UserInfo = ()=>{
             // }
         } catch (error) {
             console.log(error)
+            setMsgType("failure")
             setIsDisabled(false)
         }
     }

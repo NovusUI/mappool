@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
 import { useApp } from '../../contextAPI/AppContext';
+import { useMsg } from '../../contextAPI/MsgContext';
 
  const EventScreen =  () => {
     
@@ -14,9 +15,11 @@ import { useApp } from '../../contextAPI/AppContext';
     const  {setUserSelectedEvent} =useApp()
 
     const eventCollection = collection(db, "events")
-    const {setChosenEvent} = useApp()
+   
+    const {setMsgType} = useMsg()
 
     useEffect(() => {
+      setMsgType("success")
         const fetchEvents = async () => {
           try {
             const eventsCollection = await getDocs(collection(db,"events")) 
@@ -32,6 +35,7 @@ import { useApp } from '../../contextAPI/AppContext';
             setEvents(eventsData);
           } catch (error) {
             console.error('Error fetching events:', error);
+            setMsgType("failure")
           }
         };
     
@@ -48,14 +52,15 @@ import { useApp } from '../../contextAPI/AppContext';
     const eventDocRef = doc(eventCollection,eventId)
     const eventDoc = await getDoc(eventDocRef)
     console.log(eventDoc.exists())
-
+   
     if(!eventDoc.exists()){
       
         if(updateRole){
-            navigate("/events")
+            navigate("/notfound",{state:{eventsLink:"/events"}})
         }else{
-            navigate("/")
+            navigate("/notfound",{state:{eventsLink:"/"}})
         }
+       
         return
     }
         
@@ -83,6 +88,7 @@ import { useApp } from '../../contextAPI/AppContext';
         }
     } catch (error) {
         console.error(error)
+        setMsgType("failure")
     }
     
 

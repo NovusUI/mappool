@@ -3,6 +3,7 @@ import { db } from "../../firebase/config"
 import { useAuth } from "../../contextAPI/AuthContext"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { useMsg } from "../../contextAPI/MsgContext"
 
 
 
@@ -11,6 +12,7 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
 
     const {user} =useAuth()
     const [isDisabled, setIsDisabled] = useState(false)
+    const {setMsgType} = useMsg()
 
    const navigate = useNavigate()
 
@@ -63,6 +65,7 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
 
         } catch (error) {
             console.log(error)
+            setMsgType("failure")
             setIsDisabled(false)
         }
 

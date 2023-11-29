@@ -7,6 +7,7 @@ import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateD
 import { db } from "../../firebase/config"
 import { useApp } from "../../contextAPI/AppContext"
 import ChatApp from "../../components/ChatApp"
+import { useMsg } from "../../contextAPI/MsgContext"
 
 const Contact = ({setSwitchScreen})=>{
 
@@ -40,9 +41,16 @@ const Contact = ({setSwitchScreen})=>{
     const eventCollectionRef = collection(db,"events")
     
     const firstSurveyRef = useRef()
-    
+    const navigate = useNavigate()
+    const {setMsgType} = useMsg()
    
  
+    useEffect(()=>{
+      if(!eventId){
+        navigate("/notfound")
+      }
+     
+    },[])
    
 
    useEffect(()=>{
@@ -59,14 +67,17 @@ const Contact = ({setSwitchScreen})=>{
           setEventData(eventData)
    
           if((eventData.eventDate.seconds - (Math.floor(Date.now() / 1000))) <= 1200 && !poolHailer.startOfEventSurvey ){
-          
-            
             setFirstSurvey(true)
             setIsDisabled(true)
           }else{
             setFirstSurvey(false)
           }
+        }else{
+          setMsgType("failure")
         }
+    },(error)=>{
+      console.log(error)
+      setMsgType("failure")
     })
 
     return()=> unsubscribeEventSnapShop()
@@ -79,9 +90,12 @@ const Contact = ({setSwitchScreen})=>{
 
     useEffect(()=>{
       
+      try {
+        
       if(poolRef){
       const poolMsgsRef = collection(poolRef,"poolMessages")
       setPoolMgsRef(poolMsgsRef)
+      
       const poolMsgsUnsubscribe = onSnapshot(poolMsgsRef,(snapshot)=>{
       
       
@@ -93,14 +107,20 @@ const Contact = ({setSwitchScreen})=>{
 
        setPoolMsgs(sortedMgs)
       
+     },(error)=>{
+        console.log(error)
+        setMsgType("failure")
      })
       
      return()=> poolMsgsUnsubscribe()
     }
+    } catch (error) {
+        setMsgType("failure")
+    }
       
     },[poolRef])
 
-    const navigate = useNavigate()
+    
     
     const [isWaiting, setIsWaiting] = useState(true)
     
@@ -110,17 +130,20 @@ const Contact = ({setSwitchScreen})=>{
         if(pool && pool.status)
           setIsWaiting(false)
     },[pool])
+
    
     useEffect(()=>{
-
+      
       if(!eventId){
-        navigate("/events")
+        navigate("/notfound")
       }
       
       setIsWaiting(true)
      
       const getEventDoc = async()=>{
-
+          
+        try {
+        
           const usersCollection = collection(db, "users")
           const userDoc = doc(usersCollection,user.id)
           const userEvents = collection(userDoc,"userevents")
@@ -128,9 +151,9 @@ const Contact = ({setSwitchScreen})=>{
 
           seteventDocRef(userEventDoc)
           const userEventDocData= await getDoc(userEventDoc)
-          const data = userEventDocData.data()
-          if(data){
-          
+      
+          if(userEventDocData.exists()){
+            const data = userEventDocData.data()
             const poolStatus = data.poolId;
             const carPoolStatus = data.carpoolId;
            
@@ -147,12 +170,18 @@ const Contact = ({setSwitchScreen})=>{
 
           }else{
               console.log('Document does not exist');
-    
+              navigate("/notfound")
             }
+          } catch (error) {
+            console.log(error)
+            setMsgType("failure")
+          }
 
       }
     
       getEventDoc()
+        
+  
       
    
     },[])
@@ -168,13 +197,11 @@ const Contact = ({setSwitchScreen})=>{
      
        setPoolRef(poolDoc)
        const  unsubscribePool = onSnapshot(poolDoc,(docSnapshot)=>{
+
          if(docSnapshot.exists()){
         
            const data  = docSnapshot.data()
-          
-          
            setPool(data)
-           
            if(data.returnTripSurvey && !poolHailer.endOfEventSurvey){
               setSecondSurvey(true)
               setIsDisabled(true)
@@ -210,6 +237,9 @@ const Contact = ({setSwitchScreen})=>{
           setValidateMessage("pool is closed or cancelled")
          }
         
+       },(error)=>{
+        console.log(error)
+        setMsgType("failure")
        })
   
        
@@ -227,25 +257,33 @@ const Contact = ({setSwitchScreen})=>{
 
     if(poolId){
       
-      const poolCollection = collection(db,"pool")
-      const poolDoc = doc(poolCollection,poolId)
-      const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
-      const poolHailerDoc = doc(poolHailersSubcollection, user.id)
+      try {
+        const poolCollection = collection(db,"pool")
+        const poolDoc = doc(poolCollection,poolId)
+        const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
+        const poolHailerDoc = doc(poolHailersSubcollection, user.id)
+     
+      
      
       setPoolHailerRef(poolHailerDoc)
         const unsubscribeHaillers = onSnapshot(poolHailerDoc,(snapshot)=>{
           
-           if(snapshot.exists()){
-            
+          if(snapshot.exists()){
             const data  = snapshot.data()
-            
             setPoolHailer(data)
-          
-           }
+          }
+
+        },(error)=>{
+          console.log(error)
+          setMsgType("failure")
         })
 
         
-    return ()=> unsubscribeHaillers()
+       return ()=> unsubscribeHaillers()
+      } catch (error) {
+
+        setMsgType("failure")
+      }
     }
 
 
@@ -279,15 +317,11 @@ const Contact = ({setSwitchScreen})=>{
         if(validate){
             if(confirmedReject){
           
-                await updateDoc(eventDocRef,poolStatus)
-                console.log("here")
-                const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
-                console.log(poolId)
-
-                const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
-                console.log("here")
-                await setDoc(eventRejectedRideDocRef,{id:poolId, reason:"unknown"})
-                console.log("here")
+              await updateDoc(eventDocRef,poolStatus)
+              const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
+              const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
+              await setDoc(eventRejectedRideDocRef,{id:poolId, reason:"unknown"})
+                
                 
             }
         }else{
@@ -304,11 +338,10 @@ const Contact = ({setSwitchScreen})=>{
       
      } catch (error) {
        console.error(error)
-      setIsDisabled(false)
-    
-     }
-     
-     
+       setMsgType("failure")
+       setIsDisabled(false)
+
+     }  
 
   }
 
@@ -351,6 +384,7 @@ const Contact = ({setSwitchScreen})=>{
         await updateDoc(newHailerDocRef, hailerData)
       } catch (error) {
         console.error(error)
+        setMsgType("failure")
         setIsDisabled(false)
       
       }
@@ -366,6 +400,8 @@ const Contact = ({setSwitchScreen})=>{
   }
 
   const endOfEventSurvey = async(status)=>{
+    try {
+    
      if(status){
         await updateDoc(poolHailerRef,{
           endOfEventSurvey: {
@@ -375,7 +411,7 @@ const Contact = ({setSwitchScreen})=>{
       })
       setSecondSurvey(false)
       setIsDisabled(false)
-      console.log("is did tt")
+      
      }else{
       await updateDoc(poolHailerRef,{
         endOfEventSurvey: {
@@ -386,6 +422,10 @@ const Contact = ({setSwitchScreen})=>{
       setSecondSurvey(false)
       cancelRide()
      }
+    } catch (error) {
+      console.log(error)
+      setMsgType("failure")
+    }
   }
 
   const startOfEventSurvey = async(type)=>{
@@ -450,6 +490,7 @@ const Contact = ({setSwitchScreen})=>{
       setIsDisabled(false)
     } catch (error) {
       console.log(error)
+      setMsgType("failure")
     }
   }
 

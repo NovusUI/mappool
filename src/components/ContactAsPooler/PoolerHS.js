@@ -3,6 +3,7 @@ import PassengerQuickAction from './PassengerQuickAction'
 import ChatApp from '../ChatApp'
 import { collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase/config'
+import { useMsg } from '../../contextAPI/MsgContext'
 
 
 const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassenger,isDisabled,poolDocRef,poolId,setIsDisabled,poolData}) => {
@@ -18,6 +19,7 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
    const eventCollectionRef = collection(db,"events")
    const eventDocRef = doc(eventCollectionRef,eventId)
    const [showChangeLoc, setShowChangeLoc] = useState(false)
+   const {setMsgType} = useMsg()
  
    const changeLocationRef = useRef(null)
 
@@ -39,12 +41,18 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
             setReturnTripSurvey(false)
             setIsDisabled(false)
           }
+        }else{
+           setMsgType("failure")
         }
+    },(error)=>{
+       console.log(error)
+       setMsgType("failure")
     })
 
     return()=> unsubscribeEventSnapShop()
     } catch (error) {
       console.log(error)
+      setMsgType("failure")
     }
     
    },[])
@@ -65,12 +73,16 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
 
       setPoolMsgs(sortedMgs)
       
+    },(error)=>{
+      console.log(error)
+      setMsgType("failure")
     })
      
     return()=> poolMsgsUnsubscribe()
       
     } catch (error) {
       console.log(error)
+      setMsgType("failure")
     }
     
     
@@ -116,7 +128,8 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
         
       }
     } catch (error) {
-      
+      console.log(error)
+      setMsgType("failure")
     }
        
    }

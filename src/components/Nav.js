@@ -21,6 +21,7 @@ import { getToken } from 'firebase/messaging';
 import NotPermittedScreen from '../screens/NotPermittedScreen';
 import NavBar from './NavBar';
 import MessageBox from './MessageBox';
+import NotFoundScreen from '../screens/NotFoundScreen';
 
 const Nav = ()=>{
 
@@ -119,6 +120,7 @@ const Nav = ()=>{
           <Route path ={"/"} element={<ContactYourRide/>}/>
           <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
           <Route path={completelyRandomPath} element={<AdminScreen/>}/>
+          <Route path={"/notfound"} element={<NotFoundScreen/>}/>
           <Route path={"/admin"} element={user.role === "admin" && <AdminScreen/> || <NotPermittedScreen/>}/>
           </Routes>
           
