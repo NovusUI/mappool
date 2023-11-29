@@ -95,9 +95,7 @@ const ContactYourRide = ()=>{
             (isWaiting  && <div>waiting...</div>)
             ||
             (approved && ((poolExists) ? <ContactAsPoolee setSwitchScreen={setPoolExist}/> :<AvailableRides  setSwitchScreen={setPoolExist}/>) || <PermissionCard/>)
-          
-          
-      
+ 
         :
          (isWaiting && <div>waiting...</div>)
             ||

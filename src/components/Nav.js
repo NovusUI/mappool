@@ -20,6 +20,7 @@ import ClearToken from './ClearAuthToken';
 import { getToken } from 'firebase/messaging';
 import NotPermittedScreen from '../screens/NotPermittedScreen';
 import NavBar from './NavBar';
+import MessageBox from './MessageBox';
 
 const Nav = ()=>{
 
@@ -122,7 +123,7 @@ const Nav = ()=>{
           </Routes>
           
         )}
-    
+          <MessageBox/>
       </Router>
     )
 }

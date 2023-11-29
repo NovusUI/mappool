@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../contextAPI/AuthContext'
 import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import ScrollToBotttomBtn from './ScrollToBotttomBtn'
 
 const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
 
@@ -12,6 +13,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const [admin, setAdmin] = useState(null)
     const [isInfoMsg, setIsInfoMsg] = useState(false)
     const [directedTo, setDirectedTo] = useState([])
+    const chatAreaRef = useRef()
 
     useEffect(()=>{
         
@@ -49,7 +51,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
 
     const {user} = useAuth()
     const sendMsg = async()=>{
-       
+        setChatValue("")
         const chatMsgRef = doc(poolMsgsRef)
         const msg = {
             sender: {
@@ -82,7 +84,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         try {
             await setDoc(chatMsgRef,msg)
 
-            setChatValue("")
+            
         } catch (error) {
             console.log(error)
             setChatValue("")
@@ -132,13 +134,13 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
    
 
   return (
-    <div id='chat-view'>
+    <div id='chat-view' >
       <button className='x-cancel-btn' onClick={()=>setOpenChat(false)}>x</button>
       <div id="utility-bar">
         <button class='round-btn' onClick={filterByInfo}>i</button>
         <button class='round-btn' onClick={filterByMsgToYou}>@</button>
       </div>
-      <div id='chat-area'>
+      <div id='chat-area' ref={chatAreaRef}>
         {  isFiltered &&
             filteredMsg.map((msg,index)=>{
                 return(
@@ -158,10 +160,13 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
                 )
             })
         }
+       <ScrollToBotttomBtn chatAreaRef={chatAreaRef}/>
       </div>
       <div id='chat-input-div'>
         <input id='chat-input' placeholder='your message' value={chatValue} onChange={handleChatInput} />
-        <button class='round-btn' onClick={sendMsg}></button>
+        <button class='round-btn' onClick={sendMsg}>
+         
+        </button>
       </div>
     </div>
   )
