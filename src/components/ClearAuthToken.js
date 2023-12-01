@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import firebase from 'firebase/app';
 import 'firebase/auth';
-import { auth, db } from '../firebase/config';
+import { auth } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 const ClearToken = () => {
   useEffect(() => {

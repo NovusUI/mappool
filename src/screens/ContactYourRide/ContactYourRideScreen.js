@@ -43,6 +43,7 @@ const ContactYourRide = ()=>{
             const eventCollectionRef = collection(db,"events")
             const eventDocRef = doc(eventCollectionRef,eventId)
             const eventDoc = await getDoc(eventDocRef)
+           
             if(!eventDoc.exists)
                 navigate('/notfound')
                 return
@@ -72,7 +73,10 @@ const ContactYourRide = ()=>{
             // check if event id is present in local storage
             const userEventDoc = doc(userEvents,eventId)
             try {
+                
+              
                 const userEventDocSnapshot = await getDoc(userEventDoc)
+          
                 const userDocSnapshot = await getDoc(userDoc)
                 if(!userEventDocSnapshot.exists()){
                     navigate("/events")

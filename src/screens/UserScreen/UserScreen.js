@@ -1,16 +1,15 @@
 import { useRef, useEffect, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
 import "../../index.css"
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
+import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import { useMsg } from "../../contextAPI/MsgContext"
 // import { randomRequests } from "../util.mjs"
 
 const UserInfo = ()=>{
     
-    const {user, updateRole, setUser,token,setUpdateRole} = useAuth()
+    const {user, updateRole, setUser,setUpdateRole} = useAuth()
     // const [requesting, setRequesting] = useState(false)
     const [waNumError, setWaNumError] = useState(null)
     const [emailError, setEmailError] = useState(null)
@@ -21,7 +20,7 @@ const UserInfo = ()=>{
     const [seatCostError, setSeatCostError] = useState(null)
     const [isDisabled, setIsDisabled] = useState(false)
 
-    const {waNum, email, location, convPULoc, addInfo, seatsAvail: seatsAvail, seatsCost: seatsCost} = user 
+    const {waNum, email, location, convPULoc, addInfo, seatsAvail, seatsCost} = user 
     
     const navigate = useNavigate()
     const eventId = localStorage.getItem("eventId")
@@ -54,10 +53,10 @@ const UserInfo = ()=>{
         
         // removed user.role
          setUpdateRole(eventRole)
-         //|| localStorage.getItem("updateRole") == "pooler"
+         //|| localStorage.getItem("updateRole") === "pooler"
 
 
-        if( updateRole == "pooler") {
+        if( updateRole === "pooler") {
           
             seatsAvailRef.current.value = seatsAvail || ""
             seatCostRef.current.value = seatsCost || ""
@@ -170,7 +169,7 @@ const UserInfo = ()=>{
             addInfo: addInfoRef.current.value,
         }
         
-        if(updateRole == "pooler") {
+        if(updateRole === "pooler") {
             data.seatsAvail = seatsAvailRef.current.value
             data.seatsCost = seatCostRef.current.value
             const seatsAvailError = validateSeatsAvailable(seatsAvailRef.current.value)
@@ -450,7 +449,7 @@ const UserInfo = ()=>{
             <div className="error-message">{addInfoError}</div>
            
             {
-            (updateRole == "pooler" || localStorage.getItem("updateRole")  == "pooler"  )&& 
+            (updateRole === "pooler" || localStorage.getItem("updateRole")  === "pooler"  )&& 
             <>
                 <input placeholder="Seats available" ref={seatsAvailRef} required/>
                 <div className="error-message">{seatsAvailError}</div>

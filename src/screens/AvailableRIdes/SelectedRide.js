@@ -1,4 +1,4 @@
-import {  collection, doc, setDoc, updateDoc } from "firebase/firestore"
+import {  collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useAuth } from "../../contextAPI/AuthContext"
 import { useNavigate } from "react-router-dom"
@@ -13,7 +13,7 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
     const {user} =useAuth()
     const [isDisabled, setIsDisabled] = useState(false)
     const {setMsgType} = useMsg()
-
+    const [disableBackBtn, setDisableBackBtn] = useState(false)
    const navigate = useNavigate()
 
   const secureRide = async()=>{
@@ -25,6 +25,7 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
      if(selectedRide.status === "created"){
 
         setIsDisabled(true)
+        setDisableBackBtn(true)
            // update request status to open
 
 
@@ -37,6 +38,24 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
             const userEventDoc = doc(userEvents,eventId)
             
             console.log(selectedRide.poolType)
+
+            const rideCollectionRef = collection(db,"pool")
+            const rideDocRef = doc(rideCollectionRef, selectedRide.id)
+            const selectedRideDoc = await getDoc(rideDocRef)
+            const selectedRideData = selectedRideDoc.data()
+
+            if(selectedRideData.status === "cancelled"){
+                setSelectedRide(prev=>({...prev,status:"cancelled"}))
+                setDisableBackBtn(false)
+                return
+            }
+            if(selectedRideData.status === "closed"){
+                setSelectedRide(prev=>({...prev,status:"closed"}))
+                setDisableBackBtn(false)
+                return
+            }
+
+
             if(selectedRide.poolType === "pool"){
                 await updateDoc(userEventDoc,{poolId:selectedRide.id})
             }else if(selectedRide.poolType === "carpoolOffer"){
@@ -97,8 +116,8 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
             { selectedRide.status === "closed" &&"Ride closed"}
         </button>
         <button 
-            className={(isDisabled) && "inactive"}   
-            disabled={(isDisabled) && "true"}
+            className={(disableBackBtn) && "inactive"}   
+            disabled={(disableBackBtn) && "true"}
             onClick={()=>setSelectedRide(null)}
          >
             Cancel

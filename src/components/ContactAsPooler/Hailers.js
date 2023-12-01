@@ -1,7 +1,7 @@
 import React from 'react'
 import SwipeCard from '../SwipeCard'
 
-const Hailers = ({hailers,addNewPassenger,rejectPassenger, setViewHailers, passengers, isDisabled}) => {
+const Hailers = ({hailers,addNewPassenger,rejectPassenger, setViewHailers, isDisabled}) => {
 
   return (
     <>

@@ -148,6 +148,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
       </div>
       <div id='chat-area' ref={chatAreaRef}>
         {  isFiltered &&
+          
             filteredMsg.map((msg,index)=>{
                 return(
                 <div id={index} className={msg.sender.id === user.id && "my-chat" || "your-chat"}>

@@ -16,7 +16,7 @@ const Contact = ({setSwitchScreen})=>{
     const [poolId, setPoolId] = useState(null)
     const [poolRef, setPoolRef] = useState(null)
     const {user, updateRole} = useAuth() 
-    const [type, setType] = useState(null)
+    const [poolType, setPoolType] = useState(null)
     const [validate, setValidate] = useState(false)
     const [validateMessage, setValidateMessage] = useState("")
     const [pool, setPool] = useState(null)
@@ -55,7 +55,7 @@ const Contact = ({setSwitchScreen})=>{
 
    useEffect(()=>{
 
-    if(eventDocRef && poolHailer){
+    if(eventDocRef && poolHailer && pool){
     try {
       const eventDocRef = doc(eventCollectionRef,eventId)
     const unsubscribeEventSnapShop = onSnapshot(eventDocRef,(snapshot)=>{
@@ -65,8 +65,8 @@ const Contact = ({setSwitchScreen})=>{
             ...snapshot.data()
           }
           setEventData(eventData)
-   
-          if((eventData.eventDate.seconds - (Math.floor(Date.now() / 1000))) <= 1200 && !poolHailer.startOfEventSurvey ){
+           console.log(pool.status)
+          if((eventData.eventDate.seconds - (Math.floor(Date.now() / 1000))) <= 1200 && !poolHailer.startOfEventSurvey && pool.status !== "cancelled"){
             setFirstSurvey(true)
             setIsDisabled(true)
           }else{
@@ -85,7 +85,7 @@ const Contact = ({setSwitchScreen})=>{
       console.log(error)
     }
    }
-   },[eventDocRef,poolHailer])
+   },[eventDocRef,poolHailer,pool])
 
 
     useEffect(()=>{
@@ -159,12 +159,12 @@ const Contact = ({setSwitchScreen})=>{
            
             if (poolStatus && poolStatus !== 'pending') {
               // Handle the case where the "status" field changes from "pending"
-              setType("pool")
+              setPoolType("pool")
               setPoolId(poolStatus)
 
             }
             else if( carPoolStatus && carPoolStatus !== "pending"){
-              setType("carpool")
+              setPoolType("carpool")
               setPoolId(carPoolStatus)
             }
 
@@ -202,7 +202,7 @@ const Contact = ({setSwitchScreen})=>{
         
            const data  = docSnapshot.data()
            setPool(data)
-           if(data.returnTripSurvey && !poolHailer.endOfEventSurvey){
+           if(data.returnTripSurvey && !poolHailer.endOfEventSurvey && pool.status !== "cancelled"){
               setSecondSurvey(true)
               setIsDisabled(true)
            }else{
@@ -219,10 +219,20 @@ const Contact = ({setSwitchScreen})=>{
             setValidate(false)
             setLeaveAMsg(false)
             setValidateMessage("Pooler rejected your offer! Maybe not a macth")
+           }else if(data.status === "created" && poolHailer.poolHailerStatus === "cancelled"){
+             setValidate(true)
+             setLeaveAMsg(false)
+          
+           }else if(poolHailer.poolHailerStatus === "removed"){
+            setValidate(false)
+            setLeaveAMsg(false)
+             setValidateMessage("pool is closed or cancelled")
+
            }
            else if(data.status == "created"){
             setValidate(true)
             setLeaveAMsg(true)
+
            }
 
            else{
@@ -290,11 +300,17 @@ const Contact = ({setSwitchScreen})=>{
    },[poolId])
 
 
-   const joinCarpoolGroup = ()=>{
+   const joinCarpoolGroup = async()=>{
      if(leaveAMsg){
         setShowTextArea(true)
      }else{
       setOpenChat(true)
+      if(poolHailer.poolHailerStatus === "cancelled"){
+        await updateDoc(poolHailerRef,{
+          poolHailerStatus:"accepted"
+        })
+      }
+      
      }
      
   };
@@ -302,21 +318,25 @@ const Contact = ({setSwitchScreen})=>{
   const cancelRide = async() => {
      
     setIsDisabled(true)
-     const poolStatus= type === "carpool" && {carpoolId: "pending"} || {poolId: "pending"}
+     const poolStatus= poolType === "carpool" && {carpoolId: "pending"} || {poolId: "pending"}
      const poolCollection = collection(db,"pool")
      const poolDoc = doc(poolCollection,poolId)
      const poolHailersSubcollection = collection(poolDoc, 'poolHailers') 
      const poolHailerDocREf = doc(poolHailersSubcollection,user.id)
      
      try {
-      await updateDoc(poolHailerDocREf,{
-        poolHailerStatus: "rejected"
-      })
+     
+      
+      
 
-     if(type){
+     if(poolType){
         if(validate){
             if(confirmedReject){
-          
+              await updateDoc(poolHailerDocREf,{
+                poolHailerStatus: "rejected"
+                })
+             
+              // rejected when the ride is still opem
               await updateDoc(eventDocRef,poolStatus)
               const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
               const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
@@ -325,11 +345,23 @@ const Contact = ({setSwitchScreen})=>{
                 
             }
         }else{
-            await updateDoc(eventDocRef,poolStatus)
-            const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
-            const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
-            await setDoc(eventRejectedRideDocRef,{id:poolId, reason: "ride not available"})
-  
+          if(poolHailer.poolHailerStatus === "accepted"){
+            await updateDoc(poolHailerDocREf,{
+              poolHailerStatus: "cancelled"
+              })
+          }
+          //rejected by poolee when the pooler removes or reject you 
+          await updateDoc(eventDocRef,poolStatus)
+          const eventRejectedRidesRef = collection(eventDocRef,"rejectedRides")
+          const eventRejectedRideDocRef = doc(eventRejectedRidesRef,poolId)
+
+          if(poolHailer.poolHailerStatus === "rejected"){
+             
+            await setDoc(eventRejectedRideDocRef,{id:poolId, reason: "rejected"})
+          }else if(poolHailer.poolHailerStatus === "removed"){
+            await setDoc(eventRejectedRideDocRef,{id:poolId, reason: "removed"})
+          }
+          
        }
        
      }
@@ -428,9 +460,9 @@ const Contact = ({setSwitchScreen})=>{
     }
   }
 
-  const startOfEventSurvey = async(type)=>{
+  const startOfEventSurvey = async(poolType)=>{
       console.log(isDisabled)
-    switch(type){
+    switch(poolType){
       case 1:{
         setFirstSurveyAnswer({
           answerType: "yes, but i went alone"
@@ -503,7 +535,7 @@ const Contact = ({setSwitchScreen})=>{
      <>
      { !openChat &&
       <div className="container">
-      <h3>Contact your {type === 'carpool' ? 'ride' : 'pool group'}</h3>
+      <h3>Contact your {poolType === 'carpool' ? 'ride' : 'pool group'}</h3>
    
        {
         showTextArea &&

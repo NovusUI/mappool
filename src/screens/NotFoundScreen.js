@@ -1,19 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const NotFoundScreen = () => {
 
-    const {state:{eventsLink}} =useLocation()
-    
+    const {state} =useLocation()
+    const [eventLink, setEventLink] = useState(null)
      
    useEffect(()=>{
-    console.log(eventsLink)
+ 
+    if(state){
+        setEventLink(state.eventLink)
+    }
    },[])
     const navigate = useNavigate()
   return (
     <div className='container'>
       Resource Not Found
-      <button onClick={()=>{eventsLink ? navigate(eventsLink):navigate("/events")}}>go to events</button>
+      <button onClick={()=>{eventLink ? navigate(eventLink):navigate("/events")}}>go to events</button>
     </div>
   )
 }

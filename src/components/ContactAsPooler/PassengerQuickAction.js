@@ -8,7 +8,7 @@ const PassengerQuickAction = ({passengers,rejectPassenger,setOpenPassengerQA}) =
             passengers.map(passenger=>(
                 <div className='passenger'>
                 <p>{passenger.username}</p>
-                <button onClick={()=>rejectPassenger(passenger.id)}>remove</button>
+                <button onClick={()=>rejectPassenger(passenger.id,"remove")}>remove</button>
                 </div>
             ))
         }

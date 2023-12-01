@@ -39,7 +39,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
         
           try {
             const poolData = await getDoc(poolDoc)
-
+            console.log(1);
             if(!poolData.exists()){
               navigate("/notfound")
               return
@@ -64,7 +64,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
           
       
             const poolHailerData = await getDocs(poolHailersSubcollection)
-        
+            console.log(2);
             const passengers = poolHailerData.docs.filter(data=> data.data().poolHailerStatus === "accepted")
             console.log(passengers)
             if(passengers.length > 0){
@@ -109,7 +109,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
 
               }else if( data.poolHailerStatus === "rejected"){
                 setRejectedPassengers((prev)=>[...prev,hailerData])
-              }else{
+              }else if(data.poolHailerStatus !== "removed" && data.poolHailerStatus !== "cancelled"){
                 setHailer((prev)=>[...prev,hailerData])
               }
               
@@ -132,6 +132,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
       try {
        
         await updateDoc(hailerRef,{poolHailerStatus:"accepted"})
+        console.log(3);
       } catch (error) {
         console.log(error)
         setMsgType("failure")
@@ -140,8 +141,8 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
       
    }
 
-   const rejectHailer = async(hailerId)=>{
- 
+   const rejectHailer = async(hailerId,type)=>{
+      console.log(type)
       //update hailers status to rejected 
       const remainingHailer = hailers.filter(h=> h.id !== hailerId)
       setHailer(remainingHailer)
@@ -150,8 +151,12 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
       setPassengers(remainingPassenger)
       const hailerRef = doc(poolHailersSubcollection,hailerId)
       try {
-       
-        await updateDoc(hailerRef,{poolHailerStatus:"rejected"})
+        if(type === "remove"){
+          await updateDoc(hailerRef,{poolHailerStatus:"removed"})
+        }else{
+         await updateDoc(hailerRef,{poolHailerStatus:"rejected"})
+        }
+        console.log(4);
       } catch (error) {
         console.log(error)
         setMsgType("failure")
@@ -162,6 +167,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
     setIsDisabled(true)
     try {
       await updateDoc(poolDoc,{status:"cancelled"})
+      console.log(5);
       setPoolStatus("cancelled")
     } catch (error) {
       console.log(error)
@@ -174,6 +180,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
     setIsDisabled(true)
     try {
       await updateDoc(poolDoc,{status:"created"})
+      console.log(6);
       setPoolStatus("created")
     } catch (error) {
       console.log(error)
