@@ -1,26 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 
-const DownloadPrompt = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (event) => {
-      // Prevent the default browser prompt
-      event.preventDefault();
-      
-      // Stash the event so it can be triggered later
-      setDeferredPrompt(event);
-    };
-
-    // Listen for the beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
+const DownloadPrompt = (setShowInstallButton,deferredPrompt,setDeferredPrompt) => {
+    
+   console.log(deferredPrompt)
   const handleInstallClick = () => {
     if (deferredPrompt) {
       // Trigger the browser prompt
@@ -36,14 +18,21 @@ const DownloadPrompt = () => {
 
         // Reset the deferredPrompt variable
         setDeferredPrompt(null);
+
+        // Hide the install button
+        setShowInstallButton(false);
       });
     }
   };
 
   return (
     <div>
-      <p>This app is installable!</p>
-      <button onClick={handleInstallClick}>Install App</button>
+     
+        <div>
+          <p>This app is installable!</p>
+          <button onClick={handleInstallClick}>Install App</button>
+        </div>
+    
     </div>
   );
 };

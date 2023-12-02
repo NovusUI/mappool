@@ -5,18 +5,38 @@ import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
 import { useApp } from '../../contextAPI/AppContext';
 import { useMsg } from '../../contextAPI/MsgContext';
+import DownloadPrompt from '../../components/DownloadPrompt';
 
  const EventScreen =  () => {
     
-    const navigate = useNavigate()
-    const [events, setEvents] = useState([])
-    const  {user,updateRole} = useAuth()
-    
-    const  {setUserSelectedEvent} =useApp()
+  const navigate = useNavigate()
+  const [events, setEvents] = useState([])
+  const  {user,updateRole} = useAuth()  
+  const  {setUserSelectedEvent} =useApp()
+  const eventCollection = collection(db, "events")
+  const {setMsgType} = useMsg()
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event) => {
+      // Prevent the default browser prompt
+      event.preventDefault();
 
-    const eventCollection = collection(db, "events")
-   
-    const {setMsgType} = useMsg()
+      // Stash the event so it can be triggered later
+      setDeferredPrompt(event);
+
+      // Show the install button
+      setShowInstallButton(true);
+    };
+
+    // Listen for the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
 
     useEffect(() => {
       setMsgType("success")
@@ -96,13 +116,16 @@ import { useMsg } from '../../contextAPI/MsgContext';
   }
 
   return (
-    <div className='container' id='events'>
+    <>
+    {showInstallButton && <DownloadPrompt setDeferredPrompt={setDeferredPrompt} deferredPrompt={deferredPrompt} setShowInstallButton={setShowInstallButton}/>}
+    {!showInstallButton && <div className='container' id='events'>
         <h1>Events</h1>
         {
             events.map(event=><button id={event.id} onClick={()=>chooseRole(event.id)}>{event.eventName}</button>)
         }
       
-    </div>
+    </div>}
+    </>
   )
 }
 
