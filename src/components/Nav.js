@@ -8,7 +8,7 @@ import SignUp from "../screens/SignUpScreen"
 import UserInfo from "../screens/UserScreen/UserScreen"
 import SwipeableContactYourRide from "../screens/ContactYourRide/SwipeableContactYourRide"
 import { useAuth } from '../contextAPI/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { auth, db, messaging } from '../firebase/config';
 
@@ -76,7 +76,11 @@ const Nav = ()=>{
                 // Send the token to your server and update the UI if necessary
                 console.log(currentToken)
                 setMsgToken(currentToken)
-               
+                
+                updateDoc(userRef,{messageToken:currentToken}).then(()=>{
+                    console.log("updated")
+                }).catch((e)=>console.log(e))
+
                 // ...
               } else {
                 // Show permission request UI
@@ -91,6 +95,8 @@ const Nav = ()=>{
           } else {
             setLoading(false)
           }
+        },(error)=>{
+         console.log(error)
         });
       }, []);
 

@@ -252,7 +252,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     overflow: scroll;
     
   }
-.my-chat,.your-chat{
+.my-chat,.your-chat,.instruction{
   padding: 10px;
   margin:  10px 0;
   color: #1D1E21;
@@ -266,7 +266,28 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   background-color: #ffffff;
   border-radius: 10px 0 ;
 }
-  #chat-input-div{
+.instruction{
+ display: flex;
+  background-color: #5A7093;
+  color: #ffffff;
+}
+.instruction div:first-child
+{
+  width: 90%;
+}  
+.instruction div:last-child
+{
+  width: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.instruction div:last-child:hover
+{
+ background-color: #0056b3;
+} 
+
+#chat-input-div{
     height: 12%;
    
     display: flex;

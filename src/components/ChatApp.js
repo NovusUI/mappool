@@ -16,6 +16,23 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const [directedTo, setDirectedTo] = useState([])
     const {setMsgType} = useMsg()
     const chatAreaRef = useRef()
+    const [instruction, setInstruction] = useState([])
+    const preSetMessages = [
+        "@info should be used at the beginning of  your message to set message in the 'i' filter",
+        "use @poolee's Name to mention a poolee in your message. All your mentions are soon in thw '@' filter",
+        "use @admin to mention pool admin in your message",
+        "it is advicable to agree upon a passphrase for this pool, for safety reasons",
+        "to delete these messages use the cancel button"
+    ]
+
+    useEffect(()=>{
+        if(localStorage.getItem("instructions") ){
+            setInstruction(JSON.parse(localStorage.getItem("instructions")))
+        }else{
+            localStorage.setItem("instructions", JSON.stringify(preSetMessages))
+            setInstruction(preSetMessages)
+        }
+    },[])
 
     useEffect(()=>{
         
@@ -137,6 +154,14 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         setChatValue(inputString)
         setIsfiltered(false)
     }
+
+    const deleteMsg =(msgIdx)=>{
+          
+        const filteredMsg = instruction.filter((msg,index)=>index !==msgIdx)
+        setInstruction(filteredMsg)
+        localStorage.setItem("instructions", JSON.stringify(filteredMsg))
+
+    }
    
 
   return (
@@ -147,6 +172,19 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         <button class='round-btn' onClick={filterByMsgToYou}>@</button>
       </div>
       <div id='chat-area' ref={chatAreaRef}>
+        {
+            instruction.map((msg,index)=>{
+                return(
+                <div id={index} className='instruction' >
+                    <div>
+                        <h3>bot</h3>
+                        <p>{msg}</p>
+                    </div>
+                    <div onClick={()=>deleteMsg(index)}>X</div>
+                </div>
+                )
+            })
+        }
         {  isFiltered &&
           
             filteredMsg.map((msg,index)=>{

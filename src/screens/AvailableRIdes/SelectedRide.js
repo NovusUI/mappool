@@ -2,19 +2,41 @@ import {  collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useAuth } from "../../contextAPI/AuthContext"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMsg } from "../../contextAPI/MsgContext"
 
 
 
 
-const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) => {
+const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen,poolHailerStatus}) => {
 
     const {user} =useAuth()
     const [isDisabled, setIsDisabled] = useState(false)
     const {setMsgType} = useMsg()
     const [disableBackBtn, setDisableBackBtn] = useState(false)
-   const navigate = useNavigate()
+    const poolRef = doc(db, 'pool', selectedRide.id);
+    // Reference to the subcollection 'poolHailers' under the existing document
+    const poolHailersSubcollection = collection(poolRef, 'poolHailers')
+    const navigate = useNavigate()
+
+
+   useEffect(()=>{
+     //get the previous doc and check if it exists 
+     try {
+        (async()=>{
+            const hailerDocRef = doc(poolHailersSubcollection,user.id)
+            const prevHailerDoc = await getDoc(hailerDocRef)
+            if(prevHailerDoc.exists()){
+                setSwitchScreen(true)
+            }
+        })()
+     } catch (error) {
+        console.log(error)
+        setMsgType("failure")
+     }
+     
+
+   },[])
 
   const secureRide = async()=>{
 
@@ -62,19 +84,16 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen}) =>
                 await updateDoc(userEventDoc,{carpoolId:selectedRide.id})
             }
 
-            const poolRef = doc(db, 'pool', selectedRide.id);
-
-            // Reference to the subcollection 'poolHailers' under the existing document
-            const poolHailersSubcollection = collection(poolRef, 'poolHailers')
-
             const newHailerDocRef = doc(poolHailersSubcollection, user.id);
-
+            
+           
             //create data for hailer
 
             const hailerData = {
                 username: user.displayName || "unknown",
                 phoneNumber: user.waNum,
                 location: user.location,
+                poolHailerStatus: "created"
             }
 
             console.log(hailerData)
