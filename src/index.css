@@ -73,6 +73,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     
     padding: 20px;
     width: 80vw;
+    max-height: 55vh;
     display: flex;
     flex-direction: column;
     background-color: #4A4A4A;
