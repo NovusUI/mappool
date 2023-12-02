@@ -235,6 +235,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     opacity: 1;
     border-radius: 15px;
     padding: 0px 20px 20px;
+    z-index: 1;
     
   }
   #utility-bar{
@@ -400,4 +401,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     padding: 5px 30px;
     border-radius: 15px;
     border: 2px solid #4A4A4A;
+  }
+  #events {
+    max-height: 80vh;
   }

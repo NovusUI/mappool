@@ -96,7 +96,7 @@ import { useMsg } from '../../contextAPI/MsgContext';
   }
 
   return (
-    <div className='container'>
+    <div className='container' id='events'>
         <h1>Events</h1>
         {
             events.map(event=><button id={event.id} onClick={()=>chooseRole(event.id)}>{event.eventName}</button>)
