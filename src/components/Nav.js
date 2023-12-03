@@ -47,10 +47,10 @@ const Nav = ()=>{
         
             const userRef = doc(db, "users", user.uid);
              
-            user.getIdToken().then((token)=>{
-              console.log(token)
-              setToken(token)
-            })
+            // user.getIdToken().then((token)=>{
+            //   console.log(token)
+            //   setToken(token)
+            // })
     
             getDoc(userRef)
             .then((docSnapshot) => {

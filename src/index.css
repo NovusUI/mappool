@@ -320,6 +320,18 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     align-items: center;
   }
 
+  .mention-suggestion{
+    width:60vw;
+    background-color:#1D1E21;
+    color: #ffffff;
+  }
+  .mention-suggestion div{
+    padding: 2px 10px;
+  }
+  .mention-suggestion div:hover{
+    background-color: #78A9FA;
+  }
+
   .round-btn{
     width: 30px ;
     height: 30px;

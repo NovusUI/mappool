@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contextAPI/AuthContext'
 
 
 
 const NavBar = () => {
 
     const [showNavMenu,  setShowNavMenu] = useState(false)
-
+    const {logout} = useAuth()
     const navigate = useNavigate()
 
     const navmenuAction = async(type)=>{
@@ -17,6 +18,11 @@ const NavBar = () => {
                 navigate("/events")
             }
         }
+    }
+
+    const onLogout = ()=>{
+      logout()
+      navigate("/")
     }
   return (
     <>
@@ -29,11 +35,11 @@ const NavBar = () => {
         </nav>
         { showNavMenu &&
         <div className='menu'>
-            <div>Profile</div>
+            {/* <div>Profile</div>
             <div>Notification</div>
-            <div>History</div>
+            <div>History</div> */}
             <div onClick={()=>navmenuAction("events")}>Events</div>
-            <div>Logout</div>
+            <div onClick={()=>onLogout()}>Logout</div>
         </div>
         }   
     </>

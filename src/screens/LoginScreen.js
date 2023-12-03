@@ -9,7 +9,7 @@ const Login = ()=>{
     return(
       <div className="container">
         <h2>Login</h2>
-        <input placeholder="Email"></input>
+        {/* <input placeholder="Email"></input>
         <input placeholder="password"></input>
         <button>Next</button>
         <h3>OR</h3>
@@ -28,7 +28,7 @@ const Login = ()=>{
                 <rect y="13.6364" width="11.3636" height="11.3636" fill="#3AA0FF"/>
             </svg>
             continue with microsoft
-        </button>
+        </button> */}
         <button onClick={()=>popupLogin()} className="social-login-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
                 <path d="M21.1644 10.7143C21.2639 10.7143 21.3497 10.7845 21.3671 10.8824C21.4647 11.4301 21.5179 12.0195 21.5179 12.5893C21.5179 14.9909 20.6146 17.1818 19.1293 18.8406C19.0551 18.9233 18.9288 18.9306 18.844 18.8589L16.2965 16.7026C16.2036 16.6241 16.1979 16.4832 16.28 16.3937C16.7872 15.8408 17.1855 15.1863 17.4412 14.4643H12.3512C12.2361 14.4643 12.1429 14.3711 12.1429 14.2559V10.9226C12.1429 10.8075 12.2361 10.7143 12.3512 10.7143H21.1644Z" fill="#0F9D58"/>

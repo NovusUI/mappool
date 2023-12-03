@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import React, { createContext, useContext, useState } from 'react';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+
 
 const AuthContext = createContext();
 
@@ -71,9 +72,19 @@ export const AuthProvider = ({ children }) => {
     
   };
 
-  const logout = () => {
+  const logout = async() => {
     // Implement your logout logic here
-    setIsLoggedIn(false);
+    try {
+      await signOut(auth)
+      console.log('User signed out successfully');
+
+      setIsLoggedIn(false);
+
+
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+    
   };
 
   return (

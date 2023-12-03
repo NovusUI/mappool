@@ -30,8 +30,9 @@ const Role = ()=>{
     }
    
     // go to the next page [userscreen]
-    const next = ()=>{
-
+    const next = (role)=>{
+         
+        setRole(role)
         if(updateRole){
             //navigate to userscreen
 
@@ -53,11 +54,10 @@ const Role = ()=>{
         <h3>{localStorage.getItem("eventName")}</h3>
         <div className="container">
             <h3>Choose Role</h3>
-            <button onClick={()=>setRole("pooler")} className={updateRole === "pooler" ?  "onselect": "group-btn"}>Pooler</button>
-            <button onClick={()=>setRole("poolee")} className={updateRole === "poolee" ?  "onselect": "group-btn"} >Poolee</button>
+            <button onClick={()=>next("pooler")} className={updateRole === "pooler" ?  "onselect": "group-btn"}>Pooler</button>
+            <button onClick={()=>next("poolee")} className={updateRole === "poolee" ?  "onselect": "group-btn"} >Poolee</button>
         </div>
         <div  className="container" style={{backgroundColor:"#2F2F2F"}}>
-            <button onClick={()=>next()}>Next</button>
             <button onClick={()=>goToEvents()}>Change Event</button>
         </div>
     </>

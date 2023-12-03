@@ -73,7 +73,7 @@ const UserInfo = ()=>{
     
     function validateWhatsAppNumber(value) {
         if (!value.match(/^\d{11}$/)) {
-            return 'WhatsApp number must be 10 digits'
+            return 'WhatsApp number must be 11 digits'
         }
         return null
     }
@@ -191,7 +191,7 @@ const UserInfo = ()=>{
         try {
             // await setDoc(userDoc, data) 
             // update user info
-            
+            console.log(!user.approved , user.approved !== false)
             if(!user.approved && user.approved !== false){
                  //create permision
 

@@ -19,10 +19,10 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const [instruction, setInstruction] = useState([])
     const preSetMessages = [
         "@info should be used at the beginning of  your message to set message in the 'i' filter",
-        "use @poolee's Name to mention a poolee in your message. All your mentions are soon in thw '@' filter",
-        "use @admin to mention pool admin in your message",
-        "it is advicable to agree upon a passphrase for this pool, for safety reasons",
-        "to delete these messages use the cancel button"
+        "use @poolee's Name to mention a poolee in your message. All your mentions are seen in the '@' filter",
+        "use @admin at the beginning of your message to mention pool admin in your message",
+        "it is advisable to agree upon a passphrase for this pool, for safety reasons",
+        "to delete these messages use the cancel button on the right"
     ]
 
     useEffect(()=>{
@@ -205,8 +205,15 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
                 )
             })
         }
+        
        <ScrollToBotttomBtn chatAreaRef={chatAreaRef}/>
       </div>
+      {/* <div className='mention-suggestion' >
+        <div>@info</div>
+        {
+            passengers.map(p=><div>{p.name}</div>)
+        }
+      </div> */}
       <div id='chat-input-div'>
         <input id='chat-input' placeholder='your message' value={chatValue} onChange={handleChatInput} />
         <button class='round-btn' onClick={sendMsg}>

@@ -3,7 +3,7 @@ import 'firebase/auth';
 import { auth } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 const ClearToken = () => {
-  useEffect(() => {
+  useEffect(() => { 
     const clearAuthToken = async () => {
       try {
         await signOut(auth)
