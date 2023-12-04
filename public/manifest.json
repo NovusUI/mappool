@@ -1,8 +1,8 @@
 {
     "name": "NovusUI",
-    "short_name": "NUI",
+    "short_name": "Novus UI",
     "description": "The app for the future",
-    "start_url": "/index.html",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#000000",
@@ -13,5 +13,5 @@
         "type": "image/png"
       }
     ]
-  }
+}
   

@@ -139,7 +139,7 @@ const AvailableRides = ({setSwitchScreen}) => {
                       { 
                         eventRideOffers.map((eventRideOffer)=><SwipeCard cardInfo={eventRideOffer} reject={rejectRide} accept={selectRide}/>)
                       }
-                    </div>
+          </div>
 
              <button  className='danger-btn'buttom-place-btn onClick={()=>navigate("/events")}>Cancel request</button>
         </>
