@@ -73,7 +73,7 @@ const isLocalhost = Boolean(
                 );
   
                 // Execute callback
-                if (config && config.onUpdate) {
+                if (confirm("New content available. Reload?") && config && config.onUpdate) {
                   config.onUpdate(registration);
                 }
               } else {
