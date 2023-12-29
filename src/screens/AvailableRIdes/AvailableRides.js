@@ -7,6 +7,7 @@ import SelectedRide from './SelectedRide';
 import SwipeCard from '../../components/SwipeCard';
 import { useMsg } from '../../contextAPI/MsgContext';
 import TinderSwipeCard from '../../components/TinderSwipeCard';
+import { useNav } from '../../contextAPI/NavContaxt';
 
 const AvailableRides = ({setSwitchScreen}) => {
 
@@ -19,6 +20,7 @@ const AvailableRides = ({setSwitchScreen}) => {
   const eventId  = localStorage.getItem("eventId") ;
   const navigate = useNavigate()
   const {setMsgType} = useMsg()
+  const {setTitle} = useNav()
 
 
   
@@ -28,6 +30,7 @@ const AvailableRides = ({setSwitchScreen}) => {
 
 
   const getRejectedRides = async()=>{
+     setTitle("Choose Pooler")
     if(!eventId){
       navigate("/notfound")
     }

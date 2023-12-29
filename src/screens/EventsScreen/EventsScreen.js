@@ -17,10 +17,11 @@ import { useNav } from '../../contextAPI/NavContaxt';
   const eventCollection = collection(db, "events")
   const {setMsgType} = useMsg()
   const  {user,updateRole} = useAuth()
-  const {setShowNav} = useNav()
+  const {setShowNav, setTitle} = useNav()
  
 useEffect(() => {
     setShowNav(false)
+    setTitle("Events")
       setMsgType("success")
         const fetchEvents = async () => {
           try {

@@ -246,14 +246,15 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
   #chat-view{
     height: 75vh;
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     width: 95vw;
     display: flex;
     flex-direction: column;
     background-color:  #202024;
+    justify-content: flex-end;
     opacity: 1;
     border-radius: 15px;
-    padding: 0px 40px;
+    padding: 20px 40px;
     z-index: 1;
     
   }

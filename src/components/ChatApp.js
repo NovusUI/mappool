@@ -18,7 +18,8 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const {setMsgType} = useMsg()
     const chatAreaRef = useRef()
     const [instruction, setInstruction] = useState([])
-    const {setShowNav} = useNav()
+    const {setShowNav, setTitle, title} = useNav()
+
 
     const preSetMessages = [
         "@info should be used at the beginning of  your message to set message in the 'i' filter",
@@ -29,6 +30,8 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     ]
 
     useEffect(()=>{
+      
+        setTitle("Chat")
         if(localStorage.getItem("instructions") ){
             setInstruction(JSON.parse(localStorage.getItem("instructions")))
         }else{

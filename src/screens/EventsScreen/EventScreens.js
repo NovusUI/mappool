@@ -21,10 +21,10 @@ import { useNav } from '../../contextAPI/NavContaxt';
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const locationData = useLocation()
   const event = locationData.state.event
-  const {setShowNav} = useNav()
+  const {setShowNav, setTitle} = useNav()
  
   useEffect(() => {
-    
+    setTitle("Event Details")
     const handleBeforeInstallPrompt = (event) => {
       // Prevent the default browser prompt
       event.preventDefault();

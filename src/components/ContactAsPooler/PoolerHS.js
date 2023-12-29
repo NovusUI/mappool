@@ -6,6 +6,7 @@ import { db } from '../../firebase/config'
 import { useMsg } from '../../contextAPI/MsgContext'
 import { useApp } from '../../contextAPI/AppContext'
 import { useAuth } from '../../contextAPI/AuthContext'
+import { useNav } from '../../contextAPI/NavContaxt'
 
 
 const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassenger,isDisabled,poolDocRef,poolId,setIsDisabled,poolData}) => {
@@ -25,7 +26,7 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
    const {eventData} = useApp()
    const changeLocationRef = useRef(null)
    const {user} = useAuth()
-
+   const {setTitle} = useNav()
   //  useEffect(()=>{
 
   //   try {
@@ -60,7 +61,7 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
     
   //  },[])
   useEffect(()=>{
-
+    setTitle("Contact Poolees")
   
     if((eventData.ends.seconds - (Math.floor(Date.now() / 1000))) <= 1800 && !poolData.returnTripSurvey ){
       setReturnTripSurvey(true)

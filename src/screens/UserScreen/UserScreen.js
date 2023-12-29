@@ -5,6 +5,7 @@ import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import { useNavigate } from "react-router-dom"
 import { useMsg } from "../../contextAPI/MsgContext"
+import { useNav } from "../../contextAPI/NavContaxt"
 // import { randomRequests } from "../util.mjs"
 
 const UserInfo = ()=>{
@@ -27,6 +28,7 @@ const UserInfo = ()=>{
     const eventName = localStorage.getItem("eventName") 
     const eventRole = localStorage.getItem("updateRole")
     const {setMsgType} = useMsg()
+    const {setTitle} = useNav()
 
     const eventDetails = {
         eventId,
@@ -46,7 +48,7 @@ const UserInfo = ()=>{
     useEffect(() => {
 
         setMsgType("normal")
-
+        setTitle("Choose Role")
         if(!eventId || !eventName || !eventRole){
             navigate("/notfound")
         }
