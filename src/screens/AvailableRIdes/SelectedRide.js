@@ -4,6 +4,7 @@ import { useAuth } from "../../contextAPI/AuthContext"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useMsg } from "../../contextAPI/MsgContext"
+import { useApp } from "../../contextAPI/AppContext"
 
 
 
@@ -18,6 +19,7 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen,pool
     // Reference to the subcollection 'poolHailers' under the existing document
     const poolHailersSubcollection = collection(poolRef, 'poolHailers')
     const navigate = useNavigate()
+    const {setCarpoolId, setPoolId} = useApp()
 
 
    useEffect(()=>{
@@ -80,9 +82,12 @@ const SelectedRide = ({selectedRide,setSelectedRide,eventId,setSwitchScreen,pool
 
             if(selectedRide.poolType === "pool"){
                 await updateDoc(userEventDoc,{poolId:selectedRide.id})
+                setPoolId(selectedRide.id)
             }else if(selectedRide.poolType === "carpoolOffer"){
                 await updateDoc(userEventDoc,{carpoolId:selectedRide.id})
+                setCarpoolId(selectedRide.id)
             }
+
 
             const newHailerDocRef = doc(poolHailersSubcollection, user.id);
             

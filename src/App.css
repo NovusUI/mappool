@@ -1,10 +1,11 @@
 
 #app{
-    background-color: #2F2F2F;
+    background-color: #202024;
     height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    align-items:center;
+    padding: 2vh 20px;
 }

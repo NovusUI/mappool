@@ -6,6 +6,7 @@ import { createRoutesFromChildren, useMatch, useNavigate } from 'react-router-do
 import SelectedRide from './SelectedRide';
 import SwipeCard from '../../components/SwipeCard';
 import { useMsg } from '../../contextAPI/MsgContext';
+import TinderSwipeCard from '../../components/TinderSwipeCard';
 
 const AvailableRides = ({setSwitchScreen}) => {
 
@@ -85,7 +86,7 @@ const AvailableRides = ({setSwitchScreen}) => {
                                     }
                                 });
     
-    
+           console.log(requestsData)
           setEventRideOffers(requestsData);
         },
         (error) => {
@@ -105,10 +106,10 @@ const AvailableRides = ({setSwitchScreen}) => {
 
  const rejectRide = async(rideId)=>{
     setRejectedRides((prev)=>[...prev,rideId])
-
+   
     const remainingOffers = eventRideOffers.filter(doc =>!rejectedRides.includes(doc.id))
     setEventRideOffers(remainingOffers)
-
+    
     const rejectedRideRef = doc(rejectedRideCollectionRef,rideId)
    
    try {
@@ -132,17 +133,24 @@ const AvailableRides = ({setSwitchScreen}) => {
       selectedRide ? 
        <SelectedRide selectedRide={selectedRide} setSelectedRide={setSelectedRide} eventId={eventId} setSwitchScreen={setSwitchScreen}/>
         :
-         <>
-          <h2>Swipe</h2>
+         <div className='island'>
+          <p className='island-para popping-300-normal'>
+            Choose the best or closest pooler to you
+            to see more options swipe the poolers
+            that is not a match.
+          </p>
           
-          <div style={{color:"white",position:"relative", height:"40vh", width:"80vw",marginBottom:"50px"}}>
+           <div style={{height:"45%", width:"100%"}}>
                       { 
-                        eventRideOffers.map((eventRideOffer)=><SwipeCard cardInfo={eventRideOffer} reject={rejectRide} accept={selectRide}/>)
+                        eventRideOffers.slice(0,5).map((eventRideOffer)=><SwipeCard id={eventRideOffer.id} cardInfo={eventRideOffer} reject={rejectRide} accept={selectRide}/>)
+                        
                       }
-          </div>
+                     
+                      
+            </div>
 
-             <button  className='danger-btn'buttom-place-btn onClick={()=>navigate("/events")}>Cancel request</button>
-        </>
+          
+        </div>
   )
 }
 

@@ -14,6 +14,6 @@ const Hailers = ({hailers,addNewPassenger,rejectPassenger, setViewHailers, isDis
   <button className={isDisabled && "inactive"} onClick={()=>setViewHailers(false)} disabled={isDisabled}>go to chat</button>
   </>
   )
-}
+} 
 
 export default Hailers

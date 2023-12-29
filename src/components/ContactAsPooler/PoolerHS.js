@@ -4,6 +4,8 @@ import ChatApp from '../ChatApp'
 import { collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase/config'
 import { useMsg } from '../../contextAPI/MsgContext'
+import { useApp } from '../../contextAPI/AppContext'
+import { useAuth } from '../../contextAPI/AuthContext'
 
 
 const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassenger,isDisabled,poolDocRef,poolId,setIsDisabled,poolData}) => {
@@ -13,49 +15,64 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
    const [openPassengerQA, setOpenPassengerQA] = useState(false)
    const [poolMsgs, setPoolMsgs] = useState([])
    const [openChat, setOpenChat] = useState(false)
-   const [eventData, setEventData] = useState(null)
+  //  const [eventData, setEventData] = useState(null)
    const [returnTripSurvey,setReturnTripSurvey] = useState(null)
    const eventId = localStorage.getItem("eventId")
    const eventCollectionRef = collection(db,"events")
    const eventDocRef = doc(eventCollectionRef,eventId)
    const [showChangeLoc, setShowChangeLoc] = useState(false)
    const {setMsgType} = useMsg()
- 
+   const {eventData} = useApp()
    const changeLocationRef = useRef(null)
+   const {user} = useAuth()
 
-   useEffect(()=>{
+  //  useEffect(()=>{
 
-    try {
+  //   try {
      
-    const unsubscribeEventSnapShop = onSnapshot(eventDocRef,(snapshot)=>{
-        if(snapshot.exists()){
-          const eventData = {
-            eventId,
-            ...snapshot.data()
-          }
-          setEventData(eventData)
-          if((eventData.ends.seconds - (Math.floor(Date.now() / 1000))) <= 1800 && !poolData.returnTripSurvey ){
-            setReturnTripSurvey(true)
-            setIsDisabled(true)
-          }else{
-            setReturnTripSurvey(false)
-            setIsDisabled(false)
-          }
-        }else{
-           setMsgType("failure")
-        }
-    },(error)=>{
-       console.log(error)
-       setMsgType("failure")
-    })
+  //   const unsubscribeEventSnapShop = onSnapshot(eventDocRef,(snapshot)=>{
+  //       if(snapshot.exists()){
+  //         const eventData = {
+  //           eventId,
+  //           ...snapshot.data()
+  //         }
+  //         setEventData(eventData)
+  //         if((eventData.ends.seconds - (Math.floor(Date.now() / 1000))) <= 1800 && !poolData.returnTripSurvey ){
+  //           setReturnTripSurvey(true)
+  //           setIsDisabled(true)
+  //         }else{
+  //           setReturnTripSurvey(false)
+  //           setIsDisabled(false)
+  //         }
+  //       }else{
+  //          setMsgType("failure")
+  //       }
+  //   },(error)=>{
+  //      console.log(error)
+  //      setMsgType("failure")
+  //   })
 
-    return()=> unsubscribeEventSnapShop()
-    } catch (error) {
-      console.log(error)
-      setMsgType("failure")
-    }
+  //   return()=> unsubscribeEventSnapShop()
+  //   } catch (error) {
+  //     console.log(error)
+  //     setMsgType("failure")
+  //   }
     
-   },[])
+  //  },[])
+  useEffect(()=>{
+
+  
+    if((eventData.ends.seconds - (Math.floor(Date.now() / 1000))) <= 1800 && !poolData.returnTripSurvey ){
+      setReturnTripSurvey(true)
+      setIsDisabled(true)
+    }else{
+      setReturnTripSurvey(false)
+      setIsDisabled(false)
+    }
+  
+
+
+},[])
    
    useEffect(()=>{
 
@@ -143,14 +160,30 @@ const PoolerHS = ({passengers,setViewHailers,hailerCount,cancelPool,rejectPassen
     ||
     
       <>
-        <div className='quick-action'>
-            <button className={hailerCount === 0 && "inactive"} onClick={()=>setViewHailers(true)} disabled={hailerCount === 0 || isDisabled}>View {hailerCount} Hailers</button>
-            <button className={isDisabled && "inactive"} onClick={()=>setOpenPassengerQA(true)} disabled={isDisabled}>passengers</button>
-        </div>
+      {
+        openChat 
+          &&  
+          <div className='nav-block alt-nav-pooler' onClick={()=>setOpenChat(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8.00006 6.93945L1.6361 0.575439L0.575439 1.6361L6.93936 8.00005L0.575439 14.364L1.6361 15.4247L8.00006 9.06075L14.3641 15.4247L15.4247 14.364L9.06076 8.00005L15.4247 1.6361L14.3641 0.575439L8.00006 6.93945Z" fill="white"/>
+            </svg>
+          </div>
+
+       }
+       
       { 
-        !openChat && 
-        <div className='container'> 
-          <button className={isDisabled && "inactive"} disabled={isDisabled} onClick={()=>setOpenChat(true)}>Join chat</button>
+   
+        <div className='island'> 
+         <div className='quick-action island-top'>
+            <button className={hailerCount === 0 && "inactive" || "purple-outline-btn"} onClick={()=>setViewHailers(true)} disabled={hailerCount === 0 || isDisabled}>View {hailerCount} Hailers</button>
+            <button className={isDisabled && "inactive" || "lilac-btn"} onClick={()=>setOpenPassengerQA(true)} disabled={isDisabled}>passengers</button>
+        </div>
+        <div className="message-div">
+            <h4 className="page-title" style={{fontSize:"15px"}}>{`Hi ${user.displayName},`}</h4>
+            <p className="popping-300-normal">Send a message to your poolees</p>
+            <button style={{width:"100%"}} className="purple-btn" onClick={()=>setOpenChat(true)}>open chat</button>
+         </div>
+
           <button className={isDisabled && "inactive" || 'danger-btn'} onClick={cancelPool} disabled={isDisabled}>Cancel Pool</button>
         </div> 
       }

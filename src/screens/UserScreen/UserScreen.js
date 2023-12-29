@@ -428,11 +428,11 @@ const UserInfo = ()=>{
      
         // :
         <>
-        <h3>{eventName}</h3>
-        <form onSubmit={onNext}>
-        <div className="container" >
-            <h3>Let's pair you</h3>
+        
+        <form onSubmit={onNext} className="island-form">
+        <div className="island" >
             
+            <h3 className="island-title page-sub-title">Let's pair you</h3>
             <input placeholder="Whatsapp number" ref={waNumRef} required/>
             <div className="error-message">{waNumError}</div>
             
@@ -458,12 +458,14 @@ const UserInfo = ()=>{
                 <div className="error-message">{seatCostError}</div>
             </>
             }
+             <button className={isDisabled && "inactive island-bottom nxt-btn" || "island-bottom nxt-btn"} disabled={isDisabled}>Looks Good</button>
+             
         </div>
-        <div className="container" style={{backgroundColor:"#2F2F2F"}}>
-        <button className={isDisabled && "inactive"} disabled={isDisabled}>Looks Good</button>
-        <button className={isDisabled && "inactive"} onClick={onChangeRole} disabled={isDisabled}>Change Role</button>
-        </div>
+        
         </form>  
+
+     
+        
         </>   
     )
 }

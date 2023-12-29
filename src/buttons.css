@@ -1,0 +1,28 @@
+.purple-btn,.purple-btn-selected{
+    border-radius: 20px;
+    background-color: #4B2CBA;
+   height: 40px;
+}
+.purple-btn-selected{
+    background-color:#281182 ;
+}
+.purple-outline-btn{
+    background-color:#202024 ;
+    border: #8E69F0 1px solid;
+}
+.nxt-btn{
+    background-color: #8E69F0;
+    width: 65%;
+    height: 40px;
+}
+.danger-btn{
+    border-radius: 10px;
+    background-color: #FF3A3A;
+    height: 40px;
+}
+.lilac-btn{
+   background-color:#8E69F0;
+}
+.send-btn{
+    background-color: #8E69F0;
+}

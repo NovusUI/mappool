@@ -1,18 +1,20 @@
 /* Reset some default browser styles */
-body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
+body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  
+    font-family: 'Poppins'
   }
-  
-  
+
   /* Set a base font size and font family */
   body {
     font-family: Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     background-color: #f0f0f0; /* Set your background color here */
+    display: flex;
+    flex-direction: column;
+   
   }
   
   /* Style the root container (usually an element with id="root") */
@@ -71,15 +73,14 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
   .container{
     
-    padding: 20px;
-    width: 80vw;
-    max-height: 55vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #4A4A4A;
-    border-radius: 20px;
+    margin-top: 20px;
+    height: inherit;
+    overflow: scroll;
+    width: 100%;
     align-items: center;
     color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
   }
 
   .social-login-btn, .group-btn, .inactive{
@@ -115,10 +116,10 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
 
   .leave-a-msg{
-    width: 90%;
+    
     height: 8vh;
     border-radius: 15px;
-    text-align: center;
+    text-align: left;
   }
 
   .quick-action{
@@ -127,14 +128,15 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     position: absolute;
     top: 8vh;
     left: 0;
-    padding:2px 20px;
-    width: 100vw;
+    padding:2px 60px;
+    width: 100%;
     
   }
 
   .quick-action button{
-    width: 30%;
-    height: 5vh;
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
   }
 
   .passenger-quick-action{
@@ -176,19 +178,29 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
 
   #top-bar{
-    height: 8vh;
-    width: 100vw;
-    background-color: #1D1E21;
-    position: absolute;
-    top: 0;
-     display: flex; 
-    justify-content: flex-end; 
-    padding: 0 20px;
+    height: 10%;
+    width: 100%;
+    background-color: #202024;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    z-index: 30;
+    
+  }
+  .nav-block{
+    width: 45px;
+    height: 40px;
+    background-color: #2C2E3A;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .three-dot-menu{
     height: inherit;
-    width: 10px;
-   
+    width: inherit;
+    background-color: #8E69F0;
+    border-radius: inherit;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -204,14 +216,19 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
 
   .menu{
-    width: fit-content;
-    height: fit-content;
+    width: 100vw;
+    height: 100vh;
     position: absolute;
-    top: 8vh;
+    top: 0;
     right: 0;
-    background-color: #5A5A5A;
-    z-index: 2;
-    padding: 0 8px;
+    background-color: #202024;;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: left;
+
   }
   .menu div{
     padding: 4px 10px;
@@ -227,16 +244,16 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
 
 
   #chat-view{
-    height: 80vh;
-    position: relative;
-    top: 5vh;
+    height: 75vh;
+    position: absolute;
+    bottom: 10px;
     width: 95vw;
     display: flex;
     flex-direction: column;
-    background-color:  #5d5656;
+    background-color:  #202024;
     opacity: 1;
     border-radius: 15px;
-    padding: 0px 20px 20px;
+    padding: 0px 40px;
     z-index: 1;
     
   }
@@ -259,15 +276,19 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   padding: 10px;
   margin:  10px 0;
   color: #1D1E21;
+  min-height: 10vh;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
 }
 .my-chat{
   background-color: #DFD1D1;
-  border-radius: 0 10px ;
+
   
 }
 .your-chat{
   background-color: #ffffff;
-  border-radius: 10px 0 ;
+ 
 }
 .instruction{
  display: flex;
@@ -308,13 +329,13 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
 
   .chat-focus-btn{
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     border-radius: 100%;
     background-color: #5A7093;
     position: absolute;
     right: 10px;
-    bottom: 100px;
+    bottom: 60px;
     color: #f0f0f0;
     display: flex;
     flex-direction: column;
@@ -361,7 +382,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   .survey div:hover{
     background-color: #888e91;
   }
-  .swipe-card{
+  .tinder-swipe-card{
     height: 40vh;
     width: 80vw;
     background-color: #4A4A4A;
@@ -371,7 +392,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     /* top: -20vh;
     left: -35vw; */
   }
-  .swipe-card-button-container{
+  .tinder-swipe-card-button-container{
       position: absolute;
       bottom: -5vw;
       left: 0;
@@ -383,7 +404,7 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
       align-items: center;
   
   }
-  .swipe-card button{
+  .tinder-swipe-card button{
     width: 10vw;
     height: 10vw;
     max-width: 100px;
@@ -391,20 +412,20 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
     border-radius: 100%;
     background-color: #f0f0f0;
   }
-  .swipe-card button:first-child{
+  .tinder-swipe-card button:first-child{
     background-color: #FF3A3A;
   }
-  .swipe-card button:last-child{
+  .tinder-swipe-card button:last-child{
     background-color: #47c153;
   }
    
-  .swipe-card button:hover{
+  .tinder-swipe-card button:hover{
     opacity: 0.8;
   }
   .profile-image{
     height: 50%;
   }
-  .swipe-card {
+  .tinder-swipe-card {
     font-size: small;
   }
 
@@ -418,4 +439,291 @@ body, h1, h2, h3,h4, p, ul, ol, li,div,nav{
   }
   #events {
     max-height: 80vh;
+  }
+
+  .search{
+   height: 40px;
+   width: 100%;
+   background-color: #2D2F3C;
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+   border-radius: 30px;
+   padding: 10px;
+   margin-top: 20px;
+  }
+  .search input{
+    height:30px;
+    border: none;
+    
+    background-color: #2D2F3C;
+    color: #f0f0f0;
+  }
+
+  .search input:hover{
+    border: none;
+  }
+
+  .event-card{
+    background-color: #18181A;
+    width: 100%;
+    max-height: 50vh;
+    margin: 10px 0;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+ 
+  .event-image{
+    /* height: 65%; */
+    border-radius: 20px;
+   
+  }
+   .event-image img{
+    width: 100%;
+    height: 100%;
+  }
+  
+  .event-details{
+  
+  height: 35%;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  }
+  .event-large-content{
+    height: auto;
+  }
+  .loc-and-time,.name-and-date{
+ 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .loc-and-time{
+    padding-top: 5px 
+  }
+  .name-and-date{
+    
+  }
+  .event-date{
+    width: 40px;
+    height: 40px;
+    background-color: #FEFEFE;
+    position: absolute;
+    right: 16px;
+    top: 20px;
+    border-radius: 5px;
+    color: #8E69F0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    font-size: small;
+  }
+
+  .event-large-card{
+    max-height: 60vh;
+    width: 100%;
+    background-color: #18181A;
+    border-radius: 20px;
+    margin-bottom: 22px;
+  }
+  .event-large-card-date{
+    padding: 10px 20px;
+    display: flex;
+    justify-content:space-between;
+   
+  }
+  .event-large-card-title{
+    padding: 0 20px;
+  }
+
+  .about-and-features{
+    flex: 1;
+    width: inherit;
+  }
+
+  .about-event,.event-features{
+    min-height: 50%;
+    width: inherit;
+    padding: 10px;
+  }
+  .about-event{
+    border-bottom: 20px ;
+    background-color: #18181A;
+    border-radius: 20px;
+  }
+  .event-features{
+   
+    display: flex;
+    flex-direction: column;
+  }
+  .event-features-container{
+ 
+    padding: 10px 0;
+    flex: 1;
+    display: flex;
+    justify-content:flex-start;
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .event-feature{
+   width: 90px;
+   height: 90px;
+   /* max-height: 100%; */
+   margin: 0 5px;
+   background-color: #CCCCDA;
+   border-radius: 20px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+   padding-bottom: 2px;
+  }
+  .feature-title{
+    color: #8E69F0;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    text-align: center;
+  }
+  .ef-img{
+    width: 100%;
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+  }
+  .ef-img img{
+    max-width: 80%; /* Make the image responsive and maintain its aspect ratio */
+    height: auto; 
+  }
+
+
+  .island{
+    display: flex;
+    height: 100%;
+    width: inherit;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+ 
+  }
+  
+  .island input{
+    height: 40px;
+    border-radius: 15px;
+    background-color: #2D2F3C;
+    color: #A0A3AF;
+    border: none;
+    width: 90%;
+    position: relative;
+  }
+  .island-form{
+    width: 100%;
+    height: 100%;
+    
+    
+  }
+  .island-top,.island-bottom,.island-title,.island-para{
+    position: absolute;
+    top:10px;
+    z-index:10;
+  }
+  .island-para{
+    top:130px;
+    padding: 0 40px;
+  }
+  .island-title{
+  
+    top:150px;
+  
+  }
+  .island-top{
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+  }
+  .island-bottom{
+    top: auto;
+    bottom: 70px;
+  }
+  .role-info{
+    display: flex;
+    align-items: center;
+    justify-content:flex-start;
+    margin-left: 20px;
+    margin-top: 20px;
+  }
+  .info{
+    width: 65%;
+    margin-left: 10px;
+  }
+  .learn-more{
+    color: #8E69F0;
+    text-decoration: underline;
+  }
+
+
+  .swipe-card{
+    border-radius: 15px;
+    background-color: #D9D9D9;
+    height: 25%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 10px 0;
+  }
+
+  .swipe-card-profile{
+    min-height: 40px;
+    min-width: 40px;
+    background-color: #7BACFF6E;
+    margin: 0 5px;
+    border-radius: 100% ;
+  }
+  .swipecard-detail-1, .swipecard-detail-2{
+    display: flex;
+    height: inherit;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 8px;
+    
+  }
+  .swipecard-detail-2{
+    width: 25%;
+  }
+
+  .message-div{
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 150px;
+    border-radius: 20px;
+    background-color: #18181A;
+    padding: 15px 15px;
+    margin-bottom: 20px;
+  }
+
+  .alt-nav, .alt-nav-pooler{
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    z-index: 40;
+    background-color: #2C2E3A;
+  }
+ 
+
+  .alt-nav-pooler{
+    top: 24px;
   }

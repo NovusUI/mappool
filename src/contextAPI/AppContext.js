@@ -7,13 +7,24 @@ export const AppProvider = ({ children }) => {
   
   const [userSelectedEvent, setUserSelectedEvent] = useState(null)
   const [updateRole, setUpdateRole] = useState(null)
-  const [isWaiting, setIsWaiting] = useState(true)
+  
   const [chosenEvent, setChosenEvent] = useState(null)
-
- 
+  const [eventData, setEventData] = useState(null)
+  const [carpoolId, setCarpoolId] = useState(null)
+  const [poolId, setPoolId] = useState(null)
+  const [yourPoolId, setYourPoolId] = useState(null)
+  const [userEventDocRef,setUserEventDocRef] = useState(null)
 
   return (
-    <AppContext.Provider value={{userSelectedEvent, setUserSelectedEvent , updateRole, setUpdateRole,isWaiting,setIsWaiting,chosenEvent, setChosenEvent}}>
+    <AppContext.Provider value={{userSelectedEvent, setUserSelectedEvent , 
+                                updateRole, setUpdateRole,
+                                chosenEvent, setChosenEvent,
+                                eventData, setEventData,
+                                carpoolId, setCarpoolId,
+                                poolId, setPoolId,
+                                yourPoolId, setYourPoolId,
+                                userEventDocRef,setUserEventDocRef
+                                }}>
       {children}
     </AppContext.Provider>
   );

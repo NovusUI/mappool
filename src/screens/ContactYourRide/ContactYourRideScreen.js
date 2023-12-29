@@ -1,11 +1,11 @@
 
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import "../../index.css"
 import { useEffect, useState } from "react"
 import { useAuth } from "../../contextAPI/AuthContext"
 import ContactAsPooler from "./ContactAsPooler"
 import ContactAsPoolee from "./ContactAsPoolee"
-import { collection, doc, getDoc } from "firebase/firestore"
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore"
 import { db } from "../../firebase/config"
 import AvailableRides from "../AvailableRIdes/AvailableRides"
 import { useApp } from "../../contextAPI/AppContext"
@@ -18,20 +18,28 @@ const ContactYourRide = ()=>{
 
 
     const navigate = useNavigate()
-    const [poolId,setPoolId] = useState(null)
-    const [carpoolId, setCarpoolId] = useState(null)
-    const [yourPoolId, setYourPoolId] = useState(null)
+    // const [poolId,setPoolId] = useState(null)
+    // const [carpoolId, setCarpoolId] = useState(null)
+    // const [yourPoolId, setYourPoolId,carpoolId, setCarpoolId] = useState(null)
+    const {yourPoolId, setYourPoolId,poolId,setPoolId,carpoolId, setCarpoolId} = useApp()
     const [poolExists, setPoolExist] = useState((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending"))
     const [approved,setApproved] = useState(false)
-    const {isWaiting, setIsWaiting} = useApp()
+    const {setEventData} = useApp()
+    const [isWaiting, setIsWaiting] = useState(true)
     const {setMsgType} = useMsg()
     
     
-
     const {user, updateRole, setUpdateRole} = useAuth()
     const eventId = localStorage.getItem("eventId")
+    const eventCollectionRef = collection(db,"events")
+    const { userEventDocRef,setUserEventDocRef} = useApp()
+    const eventDocRef = doc(eventCollectionRef,eventId)
     // check if any of the context is on defined
-    console.log(user.id)
+    
+    useState(()=>{
+        
+
+    },[])
 
     useState(()=>{
         setMsgType("normal")
@@ -40,8 +48,7 @@ const ContactYourRide = ()=>{
         }
        
         (async()=>{
-            const eventCollectionRef = collection(db,"events")
-            const eventDocRef = doc(eventCollectionRef,eventId)
+        
             const eventDoc = await getDoc(eventDocRef)
            
             if(!eventDoc.exists)
@@ -52,38 +59,65 @@ const ContactYourRide = ()=>{
         
 
     },[])
+
+    useEffect(()=>{
+     
+      
+        try {
+         
+        const unsubscribeEventSnapShop = onSnapshot(eventDocRef,(snapshot)=>{
+            if(snapshot.exists()){
+              const eventData = {
+                eventId,
+                ...snapshot.data()
+              }
+              setEventData(eventData)
+              
+            }else{
+               setMsgType("failure")
+            }
+        },(error)=>{
+           console.log(error)
+           setMsgType("failure")
+        })
     
-    useEffect(()=>{
-        if(carpoolId || poolId ||yourPoolId){
-            setIsWaiting(false)
+        return()=> unsubscribeEventSnapShop()
+        } catch (error) {
+          console.log(error)
+          setMsgType("failure")
         }
+    
+        
+    },[])
 
-    },[carpoolId,poolId,yourPoolId])
+   
+ 
     useEffect(()=>{
 
-        setIsWaiting(true)
-        console.log("renderd")
+
+         setIsWaiting(true)
+
 
         const getUserEventSnapShot = async() => {
-            const usersCollection = collection(db, "users")
             
-            const userDoc = doc(usersCollection,user.id)
-              
-            const userEvents = collection(userDoc,"userevents")
-            // check if event id is present in local storage
-            const userEventDoc = doc(userEvents,eventId)
             try {
                 
-              
-                const userEventDocSnapshot = await getDoc(userEventDoc)
+                
+                const usersCollection = collection(db, "users")
+                const userDoc = doc(usersCollection,user.id)
+                const userEvents = collection(userDoc,"userevents")
+                const userEventDoc = doc(userEvents,eventId)
+                 setUserEventDocRef(userEventDoc)
+                const userEventDocSnapshot =  await getDoc(userEventDoc)
           
-                const userDocSnapshot = await getDoc(userDoc)
+                // const userDocSnapshot = await getDoc(userDoc)
                 if(!userEventDocSnapshot.exists()){
-                    navigate("/events")
+                    navigate("/notfound")
                     return
                 }
                 const {role,poolId,carpoolId,yourPoolId}= userEventDocSnapshot.data()
-                const {approved} = userDocSnapshot.data()
+                // const {approved} = userDocSnapshot.data()
+                const {approved} = user
                 setUpdateRole(role)
                 setPoolId(poolId)
                 setCarpoolId(carpoolId)
@@ -93,6 +127,8 @@ const ContactYourRide = ()=>{
                 setYourPoolId(yourPoolId)
                 // setIsWaiting(false)
                 setPoolExist(((carpoolId && carpoolId !== "pending") || (poolId && poolId !== "pending") ))
+                if((carpoolId  || poolId  || yourPoolId ))
+                    setIsWaiting(false)
                 
             } catch (error) {
                  console.log(error)
@@ -102,6 +138,11 @@ const ContactYourRide = ()=>{
         
         getUserEventSnapShot()
 
+    },[])
+
+
+    useEffect(()=>{
+      console.log("working")
     },[])
 
     

@@ -1,23 +1,30 @@
 import { collection, doc, getDoc, getDocs} from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation} from 'react-router-dom'
 import { db } from '../../firebase/config';
 import { useAuth } from '../../contextAPI/AuthContext';
 import { useApp } from '../../contextAPI/AppContext';
 import { useMsg } from '../../contextAPI/MsgContext';
 import DownloadPrompt from '../../components/DownloadPrompt';
+import EventLargeCard from "../../components/EventLargeCard"
+import { useNav } from '../../contextAPI/NavContaxt';
 
  const EventScreen =  () => {
     
   const navigate = useNavigate()
-  const [events, setEvents] = useState([])
+  // const [events, setEvents] = useState([])
   const  {user,updateRole} = useAuth()  
   const  {setUserSelectedEvent} =useApp()
   const eventCollection = collection(db, "events")
   const {setMsgType} = useMsg()
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const locationData = useLocation()
+  const event = locationData.state.event
+  const {setShowNav} = useNav()
+ 
   useEffect(() => {
+    
     const handleBeforeInstallPrompt = (event) => {
       // Prevent the default browser prompt
       event.preventDefault();
@@ -39,33 +46,36 @@ import DownloadPrompt from '../../components/DownloadPrompt';
   }, []);
 
     useEffect(() => {
-      setMsgType("success")
-        const fetchEvents = async () => {
-          try {
-            const eventsCollection = await getDocs(collection(db,"events")) 
-           
-            const eventsData = eventsCollection.docs.map(doc =>(
-                {
-                    id: doc.id,
-                    ...doc.data()
-                }
-               
-            ));
-            console.log(eventsData)
-            setEvents(eventsData);
-          } catch (error) {
-            console.error('Error fetching events:', error);
-            setMsgType("failure")
-          }
-        };
     
-        fetchEvents();
+      // setMsgType("success")
+      //   const fetchEvents = async () => {
+      //     try {
+      //       const eventsCollection = await getDocs(collection(db,"events")) 
+           
+      //       const eventsData = eventsCollection.docs.map(doc =>(
+      //           {
+      //               id: doc.id,
+      //               ...doc.data()
+      //           }
+               
+      //       ));
+      //       console.log(eventsData)
+      //       setEvents(eventsData);
+      //     } catch (error) {
+      //       console.error('Error fetching events:', error);
+      //       setMsgType("failure")
+      //     }
+      //   };
+    
+      //   fetchEvents();
+
+      
         
       }, []);
 
   const chooseRole = async(eventId) => {
     //store the event chosen in database and local host
-    const event = events.find(event=> event.id === eventId)
+    
 
     //check if event exists //later check for event status too
     try {
@@ -83,11 +93,7 @@ import DownloadPrompt from '../../components/DownloadPrompt';
        
         return
     }
-        
-   
-    localStorage.setItem("eventName",event.eventName)
-    localStorage.setItem("eventId",event.id)
-    //setChosenEvent(eventDoc)
+ 
 
     const usersCollection = collection(db, "users")
     const userDoc = doc(usersCollection,user.id)
@@ -104,7 +110,7 @@ import DownloadPrompt from '../../components/DownloadPrompt';
             navigate("/role")
         }else{
             //save role to local host if role exists
-            navigate("/")
+            navigate("/",{state:{userEvent:userEventDocSnapshot.data()}})
         }
     } catch (error) {
         console.error(error)
@@ -119,10 +125,46 @@ import DownloadPrompt from '../../components/DownloadPrompt';
     <>
     {showInstallButton && <DownloadPrompt setDeferredPrompt={setDeferredPrompt} deferredPrompt={deferredPrompt} setShowInstallButton={setShowInstallButton}/>}
     {!showInstallButton && <div className='container' id='events'>
-        <h1>Events</h1>
-        {
-            events.map(event=><button id={event.id} onClick={()=>chooseRole(event.id)}>{event.eventName}</button>)
-        }
+           <EventLargeCard eventDate={event.eventDate} eventName={event.eventName}/>
+           {/**container for  about and features */}
+          <div className='about-and-features'>
+             {/**about events */}
+           <div className='about-event'>
+            <h2 className='poppins-normal'>About this event</h2>
+            <p className='inter-light'>
+            Available for this evenorem ipsum dolor sit amet, 
+            consectetuer adipiscing elit. Aenean commodo
+            ligula eget dolor. 
+            </p>
+           </div>
+           {/**event features */}
+           <div className='event-features'>
+            <h6 className='inter-light'>Available for this event</h6>
+            <div className='event-features-container'>
+              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}> 
+                <div className='ef-img'>
+                  <img src="/carpool.png"></img>
+                </div>
+                <p className='feature-title'>Carpool</p>
+              </div>
+              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}>
+                <div className='ef-img'>
+                  <img src="/ticket.png"></img>
+                </div>
+                <p className='feature-title'>Get Ticket</p>
+              </div>
+              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}>
+                <div className='ef-img'>
+                  <img src="/vrhs.png"></img>
+                </div>
+                <p className='feature-title'>Experience Event</p>
+              </div>
+            </div>
+           
+           </div>
+          </div> 
+           
+        
       
     </div>}
     </>

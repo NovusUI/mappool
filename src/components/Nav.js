@@ -22,10 +22,13 @@ import NotPermittedScreen from '../screens/NotPermittedScreen';
 import NavBar from './NavBar';
 import MessageBox from './MessageBox';
 import NotFoundScreen from '../screens/NotFoundScreen';
+import EventsScreen from '../screens/EventsScreen/EventsScreen';
+
 
 const Nav = ()=>{
 
     const {isLoggedIn, setUser, user, setIsLoggedIn, setToken, setUpdateRole, updateRole,setMsgToken} = useAuth()
+  
     const [loading, setLoading] = useState(true)
     console.log(localStorage.getItem("updateRole"))
     
@@ -47,10 +50,10 @@ const Nav = ()=>{
         
             const userRef = doc(db, "users", user.uid);
              
-            // user.getIdToken().then((token)=>{
-            //   console.log(token)
-            //   setToken(token)
-            // })
+            user.getIdToken().then((token)=>{
+              console.log(token)
+              setToken(token)
+            })
     
             getDoc(userRef)
             .then((docSnapshot) => {
@@ -120,7 +123,8 @@ const Nav = ()=>{
           <Routes>
           <Route exact path="/userinfo" element={<UserInfo/>} />
           <Route path="/request"  element={<Request/>} />
-          <Route path={updateRole ?'/events':"/"} element={<EventScreen/>}/>
+          <Route path={updateRole ?'/events':"/"} element={<EventsScreen/>}/>
+          <Route path="/event-page" element={<EventScreen/>}/>
           <Route path='/role' element={<Role/>}/>
           <Route path='/ct' element={<ClearToken/>}/>
           <Route path ={"/"} element={<ContactYourRide/>}/>
@@ -131,7 +135,7 @@ const Nav = ()=>{
           </Routes>
           
         )}
-          <MessageBox/>
+          {/* <MessageBox/> */}
       </Router>
     )
 }

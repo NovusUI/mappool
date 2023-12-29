@@ -124,7 +124,7 @@ const ContactAsPooler = ({yourPoolId:poolId})=>{
 
    const addNewPassenger = async (hailer) => {
       // change status of hailer to accepted
-    
+      console.log("adding...")
       const remainingHailer = hailers.filter(h=> h.id !== hailer.id)
 
       setHailer(remainingHailer)

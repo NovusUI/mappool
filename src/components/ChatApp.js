@@ -4,6 +4,7 @@ import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import ScrollToBotttomBtn from './ScrollToBotttomBtn'
 import { useMsg } from '../contextAPI/MsgContext'
+import { useNav } from '../contextAPI/NavContaxt'
 
 const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
 
@@ -17,6 +18,8 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     const {setMsgType} = useMsg()
     const chatAreaRef = useRef()
     const [instruction, setInstruction] = useState([])
+    const {setShowNav} = useNav()
+
     const preSetMessages = [
         "@info should be used at the beginning of  your message to set message in the 'i' filter",
         "use @poolee's Name to mention a poolee in your message. All your mentions are seen in the '@' filter",
@@ -122,7 +125,7 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
     }
 
     const filterByMsgToYou= ()=>{
-      
+       
         const filteredMsg = poolMsgs.filter(msg=>msg.to?.includes(user.id))
         console.log(filteredMsg)
         setFilteredMsg(filteredMsg)
@@ -162,15 +165,17 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
         localStorage.setItem("instructions", JSON.stringify(filteredMsg))
 
     }
+
+   
    
 
   return (
     <div id='chat-view' >
-      <button className='x-cancel-btn' onClick={()=>setOpenChat(false)}>x</button>
-      <div id="utility-bar">
+      
+      {/* <div id="utility-bar">
         <button class='round-btn' onClick={filterByInfo}>i</button>
         <button class='round-btn' onClick={filterByMsgToYou}>@</button>
-      </div>
+      </div> */}
       <div id='chat-area' ref={chatAreaRef}>
         {
             instruction.map((msg,index)=>{
@@ -190,8 +195,11 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
             filteredMsg.map((msg,index)=>{
                 return(
                 <div id={index} className={msg.sender.id === user.id && "my-chat" || "your-chat"}>
-                    <h3>{msg.sender.name || "unknown"}</h3>
-                    <p>{msg.chat}</p>
+                    <div className='swipe-card-profile'></div>
+                    <div className='sswipecard-detail-1'>
+                    <h3 className='poppins-black-medium'>{msg.sender.name || "unknown"}</h3>
+                    <p className='poppins-black-small'>{msg.chat}</p>
+                    </div>
                 </div>
                 )
             })
@@ -199,8 +207,11 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
             poolMsgs.map((msg,index)=>{
                 return(
                 <div id={index} className={msg.sender.id === user.id && "my-chat" || "your-chat"}>
-                    <h3>{msg.sender.name || "unknown"}</h3>
-                    <p>{msg.chat}</p>
+                    <div className='swipe-card-profile'></div>
+                    <div className='sswipecard-detail-1'>
+                    <h3 className='poppins-black-medium'>{msg.sender.name || "unknown"}</h3>
+                    <p className='poppins-black-small'>{msg.chat}</p>
+                    </div>
                 </div>
                 )
             })
@@ -216,8 +227,17 @@ const ChatApp = ({poolMsgsRef, poolMsgs,setOpenChat,poolId}) => {
       </div> */}
       <div id='chat-input-div'>
         <input id='chat-input' placeholder='your message' value={chatValue} onChange={handleChatInput} />
-        <button class='round-btn' onClick={sendMsg}>
-         
+        <button class='round-btn send-btn' onClick={sendMsg}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <g clip-path="url(#clip0_531_2224)">
+                    <path d="M7.03337 8.96383L9.53216 1.6341C9.78204 0.926111 9.07404 0.218126 8.36608 0.468003L1.03633 2.96678C0.203406 3.2583 0.203406 4.42437 1.07798 4.67429L3.5351 5.34062C4.07651 5.50721 4.53462 5.92367 4.65954 6.46504L5.32587 8.92216C5.57579 9.79675 6.74187 9.79675 7.03337 8.96383Z" fill="white"/>
+                </g>
+                <defs>
+                    <clipPath id="clip0_531_2224">
+                        <rect width="10" height="10" fill="white"/>
+                    </clipPath>
+                </defs>
+            </svg>
         </button>
       </div>
     </div>
