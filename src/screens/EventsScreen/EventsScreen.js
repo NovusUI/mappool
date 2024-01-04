@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where} from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../../firebase/config';
@@ -18,6 +18,9 @@ import { useNav } from '../../contextAPI/NavContaxt';
   const {setMsgType} = useMsg()
   const  {user,updateRole} = useAuth()
   const {setShowNav, setTitle} = useNav()
+
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
  
 useEffect(() => {
     setShowNav(false)
@@ -25,7 +28,10 @@ useEffect(() => {
       setMsgType("success")
         const fetchEvents = async () => {
           try {
-            const eventsCollection = await getDocs(collection(db,"events")) 
+            const eventCollectionRef = collection(db,"events")
+             
+           const q = query(eventCollectionRef, where("eventDate" ,">", currentDate ))
+           const eventsCollection = await getDocs(q)
            
             const eventsData = eventsCollection.docs.map(doc =>(
                 {
