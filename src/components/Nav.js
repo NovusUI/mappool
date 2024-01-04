@@ -23,6 +23,8 @@ import NavBar from './NavBar';
 import MessageBox from './MessageBox';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import EventsScreen from '../screens/EventsScreen/EventsScreen';
+import ComingsoonPage from './ComingsoonPage';
+import CreateEvent from '../screens/CreateEvent/CreateEvent';
 
 
 const Nav = ()=>{
@@ -131,6 +133,8 @@ const Nav = ()=>{
           <Route path="/swipeable-contact-your-ride" element={<SwipeableContactYourRide />} />
           <Route path={completelyRandomPath} element={<AdminScreen/>}/>
           <Route path={"/notfound"} element={<NotFoundScreen/>}/>
+          <Route path={"/comingsoon"} element={<ComingsoonPage/>}/>
+          <Route path={"/createevent"} element={<CreateEvent/>}/>
           <Route path={"/admin"} element={user.role === "admin" && <AdminScreen/> || <NotPermittedScreen/>}/>
           </Routes>
           

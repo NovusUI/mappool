@@ -1,7 +1,7 @@
 .purple-btn,.purple-btn-selected{
     border-radius: 20px;
     background-color: #4B2CBA;
-   height: 40px;
+    height: 40px;
 }
 .purple-btn-selected{
     background-color:#281182 ;
@@ -25,4 +25,8 @@
 }
 .send-btn{
     background-color: #8E69F0;
+}
+.full-screen-btn{
+    width: 100%;
+   
 }

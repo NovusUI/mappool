@@ -10,17 +10,33 @@ const NavBar = () => {
     const [showNavMenu,  setShowNavMenu] = useState(false)
     const {logout} = useAuth()
     const navigate = useNavigate()
-    const {showNav, title} = useNav() 
+    const {showNav,setShowNav, title, setTitle} = useNav() 
 
  
     const navmenuAction = async(type)=>{
         
         switch(type){
             case "events":{
-                setShowNavMenu(false)
-                navigate("/events")
+                
+              setShowNavMenu(false)
+              navigate(`/${type}`)
             }
+            break;
+            case "createevent": {
+               setShowNav(true)
+               setTitle('Create Event')
+               setShowNavMenu(false)
+               navigate(`/${type}`)
+               
+            }
+            break;
+            default: {
+              
+              
+            }
+            
         }
+
     }
 
     const onLogout = ()=>{
@@ -67,7 +83,7 @@ const NavBar = () => {
             <div>Notification</div>
             <div>History</div> */}
             <div onClick={()=>navmenuAction("events")}>Events</div>
-            <div>Create event</div>
+            <div onClick={()=>navmenuAction("createevent")}>Create event</div>
             <div>Profile</div>
             <div>Settings</div>
             <div onClick={()=>onLogout()}>Logout</div>

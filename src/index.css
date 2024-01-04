@@ -75,7 +75,7 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
     
     margin-top: 20px;
     height: inherit;
-    overflow: scroll;
+    overflow-y: scroll;
     width: 100%;
     align-items: center;
     color: #f0f0f0;
@@ -547,7 +547,7 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
     width: inherit;
   }
 
-  .about-event,.event-features{
+  .about-event{
     min-height: 50%;
     width: inherit;
     padding: 10px;
@@ -561,6 +561,9 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
    
     display: flex;
     flex-direction: column;
+    padding: 10px 0;
+    width: inherit;
+   
   }
   .event-features-container{
  
@@ -572,7 +575,7 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
     overflow-y: hidden;
   }
   .event-feature{
-   width: 90px;
+   min-width: 90px;
    height: 90px;
    /* max-height: 100%; */
    margin: 0 5px;
@@ -583,6 +586,7 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
    align-items: center;
    flex-direction: column;
    padding-bottom: 2px;
+   position: relative;
   }
   .feature-title{
     color: #8E69F0;
@@ -729,4 +733,34 @@ body, h1, h2, h3,h4,h6, p, ul, ol, li,div,nav{
 
   .alt-nav-pooler{
     top: 24px;
+  }
+
+  .event-form{
+    width: 100%;
+  
+    margin-top: 10px;
+    display: g;
+  }
+
+  .form-type-1{
+
+  }
+
+  .form-type-1-input, .form-type-E-input{
+    background-color: #202024;
+    border: none;
+    padding: 0;
+    height: fit-content;
+    width: 100%;
+    resize: none;
+  }
+
+  .form-type-1-input:focus, .form-type-E-input:focus{
+    outline: none;
+    
+  }
+
+  .form-type-E-input{
+   width: 100%;
+   height: auto;
   }

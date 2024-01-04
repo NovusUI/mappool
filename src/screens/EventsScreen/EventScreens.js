@@ -8,6 +8,7 @@ import { useMsg } from '../../contextAPI/MsgContext';
 import DownloadPrompt from '../../components/DownloadPrompt';
 import EventLargeCard from "../../components/EventLargeCard"
 import { useNav } from '../../contextAPI/NavContaxt';
+import EventFeatures from '../../components/EventFeatures/EventFeatures';
 
  const EventScreen =  () => {
     
@@ -138,27 +139,13 @@ import { useNav } from '../../contextAPI/NavContaxt';
             </p>
            </div>
            {/**event features */}
+           
            <div className='event-features'>
-            <h6 className='inter-light'>Available for this event</h6>
+           <h6 className='inter-light'>Available for this event</h6>
             <div className='event-features-container'>
-              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}> 
-                <div className='ef-img'>
-                  <img src="/carpool.png"></img>
-                </div>
-                <p className='feature-title'>Carpool</p>
-              </div>
-              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}>
-                <div className='ef-img'>
-                  <img src="/ticket.png"></img>
-                </div>
-                <p className='feature-title'>Get Ticket</p>
-              </div>
-              <div className="event-feature" id={event.id} onClick={()=>chooseRole(event.id)}>
-                <div className='ef-img'>
-                  <img src="/vrhs.png"></img>
-                </div>
-                <p className='feature-title'>Experience Event</p>
-              </div>
+            <EventFeatures event={event} handleClick={chooseRole} featureType="carpool"/>
+            <EventFeatures event={event} handleClick={()=>navigate("/comingsoon")} featureType="getTicket"/>
+            <EventFeatures event={event} handleClick={()=>navigate("/comingsoon")} featureType="experienceEvent"/>
             </div>
            
            </div>
